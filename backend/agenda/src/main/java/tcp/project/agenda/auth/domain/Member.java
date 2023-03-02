@@ -25,6 +25,19 @@ public class Member extends BaseEntity {
 
     private String univId;
 
+    private String password;
+
     @Enumerated(EnumType.STRING)
     private Grade grade;
+
+    public Member(String name, String univId, String password, String grade) {
+        this.name = name;
+        this.univId = univId;
+        this.password = password;
+        this.grade = Grade.from(grade);
+    }
+
+    public boolean validatePassword(String password) {
+        return this.password.equals(password);
+    }
 }
