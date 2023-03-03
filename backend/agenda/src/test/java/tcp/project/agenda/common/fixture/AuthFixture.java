@@ -10,7 +10,7 @@ public class AuthFixture {
 
     public static final String SECRET_KEY = "secret-keysecret-keysecret-keysecret-keysecret-keysecret-keysecret-keysecret-keysecret-keysecret-keysecret-keysecret-keysecret-keysecret-keysecret-keysecret-keysecret-key";
     public static final String ACCESS_TOKEN = "access token";
-
+    public static final String INVALID_TOKEN = "invalid token";
     public static LoginRequest getRegularMemberLoginRequest() {
         return new LoginRequest(REGULAR_UNIV_ID, REGULAR_PASSWORD);
     }
