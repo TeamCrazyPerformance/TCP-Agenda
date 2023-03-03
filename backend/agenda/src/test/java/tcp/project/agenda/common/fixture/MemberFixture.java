@@ -1,6 +1,6 @@
 package tcp.project.agenda.common.fixture;
 
-import tcp.project.agenda.auth.domain.Member;
+import tcp.project.agenda.member.domain.Member;
 
 public class MemberFixture {
 

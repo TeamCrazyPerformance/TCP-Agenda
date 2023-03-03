@@ -1,4 +1,4 @@
-package tcp.project.agenda.auth.domain;
+package tcp.project.agenda.member.domain;
 
 import lombok.Getter;
 import tcp.project.agenda.auth.exception.NoSuchGradeException;

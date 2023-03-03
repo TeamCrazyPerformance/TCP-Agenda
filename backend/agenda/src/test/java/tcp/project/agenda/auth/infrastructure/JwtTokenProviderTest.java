@@ -3,10 +3,12 @@ package tcp.project.agenda.auth.infrastructure;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import tcp.project.agenda.auth.exception.ExpiredTokenException;
+import tcp.project.agenda.auth.exception.InvalidAccessTokenException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static tcp.project.agenda.common.fixture.AuthFixture.SECRET_KEY;
+import static tcp.project.agenda.common.fixture.AuthFixture.INVALID_TOKEN;
 
 class JwtTokenProviderTest {
 
@@ -37,5 +39,16 @@ class JwtTokenProviderTest {
         //when then
         assertThatThrownBy(() -> provider.getMemberId(token))
             .isInstanceOf(ExpiredTokenException.class);
+    }
+
+    @Test
+    @DisplayName("잘못된 형식의 accessToken이 들어오면 예외가 발생해야 함")
+    void invalidToken() throws Exception {
+        //given
+        provider = new JwtTokenProvider(SECRET_KEY, 1000000);
+
+        //when then
+        assertThatThrownBy(() -> provider.getMemberId(INVALID_TOKEN))
+            .isInstanceOf(InvalidAccessTokenException.class);
     }
 }
