@@ -1,4 +1,4 @@
-package tcp.project.agenda.auth.domain;
+package tcp.project.agenda.member.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
