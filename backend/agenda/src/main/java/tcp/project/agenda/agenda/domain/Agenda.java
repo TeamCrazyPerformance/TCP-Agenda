@@ -7,7 +7,7 @@ import org.springframework.util.StringUtils;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
 import tcp.project.agenda.agenda.exception.InvalidTitleException;
 import tcp.project.agenda.common.entity.BaseEntity;
-import tcp.project.agenda.member.domain.Grade;
+import tcp.project.agenda.member.domain.GradeType;
 import tcp.project.agenda.member.domain.Member;
 
 import javax.persistence.CascadeType;
@@ -45,7 +45,7 @@ public class Agenda extends BaseEntity {
     private String content;
 
     @Enumerated(EnumType.STRING)
-    private Grade target;
+    private GradeType target;
 
     private LocalDateTime closedAt;
 
@@ -54,7 +54,7 @@ public class Agenda extends BaseEntity {
     @OneToMany(mappedBy = "agenda", cascade = CascadeType.PERSIST)
     private List<AgendaItem> agendaItems = new ArrayList<>();
 
-    public Agenda(Member member, String title, String content, Grade target, LocalDateTime closedAt) {
+    public Agenda(Member member, String title, String content, GradeType target, LocalDateTime closedAt) {
         this.member = member;
         this.title = title;
         this.content = content;
@@ -67,8 +67,8 @@ public class Agenda extends BaseEntity {
         validateTitle(title);
         validateClosedAt(closedAt);
         content = Optional.ofNullable(content).orElse("");
-        Grade grade = Grade.from(target);
-        return new Agenda(member, title, content, grade, closedAt);
+        GradeType gradeType = GradeType.from(target);
+        return new Agenda(member, title, content, gradeType, closedAt);
     }
 
     private static void validateTitle(String title) {

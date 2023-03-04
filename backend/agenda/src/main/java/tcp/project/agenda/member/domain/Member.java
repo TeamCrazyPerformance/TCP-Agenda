@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 import tcp.project.agenda.common.entity.BaseEntity;
 
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,14 +25,10 @@ public class Member extends BaseEntity {
 
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    private Grade grade;
-
-    public Member(String name, String univId, String password, String grade) {
+    public Member(String name, String univId, String password) {
         this.name = name;
         this.univId = univId;
         this.password = password;
-        this.grade = Grade.from(grade);
     }
 
     public boolean validatePassword(String password) {
