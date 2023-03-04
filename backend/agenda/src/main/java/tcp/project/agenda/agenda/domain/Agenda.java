@@ -3,7 +3,9 @@ package tcp.project.agenda.agenda.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTime;
+import org.springframework.util.StringUtils;
+import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
+import tcp.project.agenda.agenda.exception.InvalidTitleException;
 import tcp.project.agenda.common.entity.BaseEntity;
 import tcp.project.agenda.member.domain.Grade;
 import tcp.project.agenda.member.domain.Member;
@@ -22,6 +24,7 @@ import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @Entity
@@ -61,13 +64,22 @@ public class Agenda extends BaseEntity {
     }
 
     public static Agenda createAgendaFrom(Member member, String title, String content, String target, LocalDateTime closedAt) {
+        validateTitle(title);
         validateClosedAt(closedAt);
-        return new Agenda(member, title, content, Grade.from(target), closedAt);
+        content = Optional.ofNullable(content).orElse("");
+        Grade grade = Grade.from(target);
+        return new Agenda(member, title, content, grade, closedAt);
+    }
+
+    private static void validateTitle(String title) {
+        if (!StringUtils.hasText(title)) {
+            throw new InvalidTitleException();
+        }
     }
 
     private static void validateClosedAt(LocalDateTime closedAt) {
         if (LocalDateTime.now().isAfter(closedAt)) {
-            throw new InvalidClosedAgendaTime();
+            throw new InvalidClosedAgendaTimeException();
         }
     }
 
