@@ -6,8 +6,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import tcp.project.agenda.auth.ui.AuthenticationArgumentResolver;
-import tcp.project.agenda.auth.ui.interceptor.BasicAuthInterceptor;
-import tcp.project.agenda.auth.ui.interceptor.RepresentationAuthInterceptor;
+import tcp.project.agenda.auth.ui.BasicAuthInterceptor;
 
 import java.util.List;
 
@@ -16,12 +15,12 @@ import java.util.List;
 public class AuthConfig implements WebMvcConfigurer {
 
     private final BasicAuthInterceptor basicAuthInterceptor;
-    private final RepresentationAuthInterceptor representationAuthInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(basicAuthInterceptor);
-        registry.addInterceptor(representationAuthInterceptor);
+        registry.addInterceptor(basicAuthInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns("/auth/login");
     }
 
     @Override
