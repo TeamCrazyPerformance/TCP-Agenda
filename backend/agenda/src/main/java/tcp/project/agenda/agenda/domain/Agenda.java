@@ -7,6 +7,7 @@ import org.springframework.util.StringUtils;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
 import tcp.project.agenda.agenda.exception.InvalidTitleException;
 import tcp.project.agenda.common.entity.BaseEntity;
+import tcp.project.agenda.member.domain.Grade;
 import tcp.project.agenda.member.domain.GradeType;
 import tcp.project.agenda.member.domain.Member;
 
@@ -20,6 +21,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -44,8 +46,9 @@ public class Agenda extends BaseEntity {
 
     private String content;
 
-    @Enumerated(EnumType.STRING)
-    private GradeType target;
+    @OneToOne
+    @JoinColumn(name = "target_grade_id")
+    private Grade target;
 
     private LocalDateTime closedAt;
 
@@ -54,7 +57,7 @@ public class Agenda extends BaseEntity {
     @OneToMany(mappedBy = "agenda", cascade = CascadeType.PERSIST)
     private List<AgendaItem> agendaItems = new ArrayList<>();
 
-    public Agenda(Member member, String title, String content, GradeType target, LocalDateTime closedAt) {
+    public Agenda(Member member, String title, String content, Grade target, LocalDateTime closedAt) {
         this.member = member;
         this.title = title;
         this.content = content;
@@ -63,12 +66,11 @@ public class Agenda extends BaseEntity {
         this.isClosed = false;
     }
 
-    public static Agenda createAgendaFrom(Member member, String title, String content, String target, LocalDateTime closedAt) {
+    public static Agenda createAgendaFrom(Member member, String title, String content, Grade target, LocalDateTime closedAt) {
         validateTitle(title);
         validateClosedAt(closedAt);
         content = Optional.ofNullable(content).orElse("");
-        GradeType gradeType = GradeType.from(target);
-        return new Agenda(member, title, content, gradeType, closedAt);
+        return new Agenda(member, title, content, target, closedAt);
     }
 
     private static void validateTitle(String title) {
