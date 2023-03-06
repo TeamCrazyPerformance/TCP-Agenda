@@ -66,7 +66,7 @@ class AgendaServiceTest extends ApplicationServiceTest {
     }
 
     @Test
-    @DisplayName("안건 제목이 비었을 경우 예외가 발생해야 함")
+    @DisplayName("안건 마감 시간이 잘못되었을 경우 예외가 발생해야 함")
     void createAgendaTest_invalidClosedAt() throws Exception {
         //given
         AgendaCreateRequest request = getInvalidClosedAtAgendaCreateRequest();
@@ -80,10 +80,10 @@ class AgendaServiceTest extends ApplicationServiceTest {
     @DisplayName("안건이 마감되어야 함")
     void closeTest() throws Exception {
         //given
-        Agenda agenda = getNewAgenda();
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
 
         //when
-        agendaService.closeAgenda(regular.getId(), agenda.getId());
+        agendaService.closeAgenda(regular.getId(), 1L);
 
         //then
         Agenda findAgenda = agendaRepository.findAll().get(0);
@@ -102,31 +102,26 @@ class AgendaServiceTest extends ApplicationServiceTest {
     }
 
     @Test
-    @DisplayName("없는 안건일 경우 예외가 발생해야 함")
+    @DisplayName("안건 작성자가 아닐 경우 예외가 발생해야 함")
     void closeTest_notAgendaOwner() throws Exception {
         //given
         Long notOwnerId = 999L;
-        Agenda agenda = getNewAgenda();
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
 
         //when then
-        assertThatThrownBy(() -> agendaService.closeAgenda(notOwnerId, agenda.getId()))
+        assertThatThrownBy(() -> agendaService.closeAgenda(notOwnerId, 1L))
                 .isInstanceOf(NotAgendaOwnerException.class);
     }
 
     @Test
-    @DisplayName("없는 안건일 경우 예외가 발생해야 함")
+    @DisplayName("이미 마감된 안건일 경우 예외가 발생해야 함")
     void closeTest_alreadyClosed() throws Exception {
         //given
-        Agenda agenda = getNewAgenda();
-        agendaService.closeAgenda(regular.getId(), agenda.getId());
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+        agendaService.closeAgenda(regular.getId(), 1L);
 
         //when then
-        assertThatThrownBy(() -> agendaService.closeAgenda(regular.getId(), agenda.getId()))
+        assertThatThrownBy(() -> agendaService.closeAgenda(regular.getId(), 1L))
                 .isInstanceOf(AgendaAlreadyClosedException.class);
-    }
-
-
-    private Agenda getNewAgenda() {
-        return agendaRepository.save(Agenda.createAgendaFrom(regular, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, regularGrade, BASIC_AGENDA_CLOSED_AT));
     }
 }
