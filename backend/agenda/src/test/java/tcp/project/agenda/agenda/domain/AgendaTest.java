@@ -9,7 +9,7 @@ import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
 import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
 import tcp.project.agenda.agenda.exception.InvalidTitleException;
-import tcp.project.agenda.agenda.exception.NotMemberAgendaException;
+import tcp.project.agenda.agenda.exception.NotAgendaOwnerException;
 import tcp.project.agenda.member.domain.Grade;
 import tcp.project.agenda.member.domain.Member;
 
@@ -96,7 +96,7 @@ class AgendaTest {
 
         //when then
         assertThatThrownBy(() -> agenda.validateOwner(notMemberId))
-            .isInstanceOf(NotMemberAgendaException.class);
+            .isInstanceOf(NotAgendaOwnerException.class);
     }
 
     @Test

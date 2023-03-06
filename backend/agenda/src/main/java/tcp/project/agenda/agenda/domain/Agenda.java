@@ -7,17 +7,14 @@ import org.springframework.util.StringUtils;
 import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
 import tcp.project.agenda.agenda.exception.InvalidTitleException;
-import tcp.project.agenda.agenda.exception.NotMemberAgendaException;
+import tcp.project.agenda.agenda.exception.NotAgendaOwnerException;
 import tcp.project.agenda.common.entity.BaseEntity;
 import tcp.project.agenda.member.domain.Grade;
-import tcp.project.agenda.member.domain.GradeType;
 import tcp.project.agenda.member.domain.Member;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -95,7 +92,7 @@ public class Agenda extends BaseEntity {
 
     public void validateOwner(Long memberId) {
         if (!member.getId().equals(memberId)) {
-            throw new NotMemberAgendaException(id, memberId);
+            throw new NotAgendaOwnerException(id, memberId);
         }
     }
 
