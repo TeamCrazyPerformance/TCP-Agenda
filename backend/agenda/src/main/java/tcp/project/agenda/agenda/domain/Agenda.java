@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
 import tcp.project.agenda.agenda.exception.InvalidTitleException;
+import tcp.project.agenda.agenda.exception.NotMemberAgendaException;
 import tcp.project.agenda.common.entity.BaseEntity;
 import tcp.project.agenda.member.domain.Grade;
 import tcp.project.agenda.member.domain.GradeType;
@@ -87,5 +88,11 @@ public class Agenda extends BaseEntity {
 
     public void addAgendaItems(List<AgendaItem> agendaItems) {
         this.agendaItems.addAll(agendaItems);
+    }
+
+    public void validateOwner(Long memberId) {
+        if (!member.getId().equals(memberId)) {
+            throw new NotMemberAgendaException(id, memberId);
+        }
     }
 }
