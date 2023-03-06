@@ -8,8 +8,11 @@ import tcp.project.agenda.agenda.domain.Agenda;
 import tcp.project.agenda.agenda.domain.AgendaItem;
 import tcp.project.agenda.agenda.domain.AgendaItemRepository;
 import tcp.project.agenda.agenda.domain.AgendaRepository;
+import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
+import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
 import tcp.project.agenda.agenda.exception.InvalidTitleException;
+import tcp.project.agenda.agenda.exception.NotAgendaOwnerException;
 import tcp.project.agenda.common.support.ApplicationServiceTest;
 
 import java.util.List;
@@ -18,8 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CLOSED_AT;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CONTENT;
-import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_ITEM1;
-import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_ITEM2;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_TITLE;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaCreateRequest;
@@ -73,5 +74,59 @@ class AgendaServiceTest extends ApplicationServiceTest {
         //when then
         assertThatThrownBy(() -> agendaService.createAgenda(executive.getId(), request))
                 .isInstanceOf(InvalidClosedAgendaTimeException.class);
+    }
+
+    @Test
+    @DisplayName("안건이 마감되어야 함")
+    void closeTest() throws Exception {
+        //given
+        Agenda agenda = getNewAgenda();
+
+        //when
+        agendaService.closeAgenda(regular.getId(), agenda.getId());
+
+        //then
+        Agenda findAgenda = agendaRepository.findAll().get(0);
+        assertThat(findAgenda.isClosed()).isTrue();
+    }
+
+    @Test
+    @DisplayName("없는 안건일 경우 예외가 발생해야 함")
+    void closeTest_agendaNotFound() throws Exception {
+        //given
+        Long notExistAgendaId = 999L;
+
+        //when then
+        assertThatThrownBy(() -> agendaService.closeAgenda(regular.getId(), notExistAgendaId))
+                .isInstanceOf(AgendaNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("없는 안건일 경우 예외가 발생해야 함")
+    void closeTest_notAgendaOwner() throws Exception {
+        //given
+        Long notOwnerId = 999L;
+        Agenda agenda = getNewAgenda();
+
+        //when then
+        assertThatThrownBy(() -> agendaService.closeAgenda(notOwnerId, agenda.getId()))
+                .isInstanceOf(NotAgendaOwnerException.class);
+    }
+
+    @Test
+    @DisplayName("없는 안건일 경우 예외가 발생해야 함")
+    void closeTest_alreadyClosed() throws Exception {
+        //given
+        Agenda agenda = getNewAgenda();
+        agendaService.closeAgenda(regular.getId(), agenda.getId());
+
+        //when then
+        assertThatThrownBy(() -> agendaService.closeAgenda(regular.getId(), agenda.getId()))
+                .isInstanceOf(AgendaAlreadyClosedException.class);
+    }
+
+
+    private Agenda getNewAgenda() {
+        return agendaRepository.save(Agenda.createAgendaFrom(regular, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, regularGrade, BASIC_AGENDA_CLOSED_AT));
     }
 }

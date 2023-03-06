@@ -2,6 +2,7 @@ package tcp.project.agenda.agenda.ui;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,12 @@ public class AgendaController {
     @PostMapping("")
     public ResponseEntity<Void> createAgenda(@Authenticated Long memberId, @RequestBody AgendaCreateRequest request) {
         agendaService.createAgenda(memberId, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{agendaId}")
+    public ResponseEntity<Void> closeAgenda(@Authenticated Long memberId, @PathVariable Long agendaId) {
+        agendaService.closeAgenda(memberId, agendaId);
         return ResponseEntity.ok().build();
     }
 }

@@ -7,6 +7,7 @@ import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
 import tcp.project.agenda.agenda.domain.Agenda;
 import tcp.project.agenda.agenda.domain.AgendaItem;
 import tcp.project.agenda.agenda.domain.AgendaRepository;
+import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
 import tcp.project.agenda.auth.exception.MemberNotFoundException;
 import tcp.project.agenda.auth.exception.NoSuchGradeException;
 import tcp.project.agenda.member.domain.Grade;
@@ -43,6 +44,19 @@ public class AgendaService {
         return request.getSelectList().stream()
                 .map(agendaItemDto -> AgendaItem.createAgendaItem(agenda, agendaItemDto.getContent()))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void closeAgenda(Long memberId, Long agendaId) {
+        Agenda agenda = findAgenda(agendaId);
+        agenda.validateOwner(memberId);
+
+        agenda.close();
+    }
+
+    private Agenda findAgenda(Long agendaId) {
+        return agendaRepository.findById(agendaId)
+                .orElseThrow(() -> new AgendaNotFoundException(agendaId));
     }
 
     private Grade findGrade(AgendaCreateRequest request) {
