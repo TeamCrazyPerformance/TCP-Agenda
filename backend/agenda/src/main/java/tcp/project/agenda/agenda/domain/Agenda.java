@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
+import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
 import tcp.project.agenda.agenda.exception.InvalidTitleException;
 import tcp.project.agenda.agenda.exception.NotMemberAgendaException;
@@ -13,6 +14,7 @@ import tcp.project.agenda.member.domain.GradeType;
 import tcp.project.agenda.member.domain.Member;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -53,7 +55,8 @@ public class Agenda extends BaseEntity {
 
     private LocalDateTime closedAt;
 
-    private boolean isClosed;
+    @Column(name = "is_closed")
+    private boolean closed;
 
     @OneToMany(mappedBy = "agenda", cascade = CascadeType.PERSIST)
     private List<AgendaItem> agendaItems = new ArrayList<>();
@@ -64,7 +67,7 @@ public class Agenda extends BaseEntity {
         this.content = content;
         this.target = target;
         this.closedAt = closedAt;
-        this.isClosed = false;
+        this.closed = false;
     }
 
     public static Agenda createAgendaFrom(Member member, String title, String content, Grade target, LocalDateTime closedAt) {
@@ -93,6 +96,17 @@ public class Agenda extends BaseEntity {
     public void validateOwner(Long memberId) {
         if (!member.getId().equals(memberId)) {
             throw new NotMemberAgendaException(id, memberId);
+        }
+    }
+
+    public void close() {
+        validateAlreadyClosed();
+        this.closed = true;
+    }
+
+    private void validateAlreadyClosed() {
+        if (isClosed()) {
+            throw new AgendaAlreadyClosedException();
         }
     }
 }
