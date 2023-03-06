@@ -31,11 +31,15 @@ public class ApplicationServiceTest {
     protected Member regular;
     protected Member general;
 
+    protected Grade executiveGrade;
+    protected Grade regularGrade;
+    protected Grade generalGrade;
+
     @BeforeEach
     void init() {
-        Grade executiveGrade = gradeRepository.save(new Grade(GradeType.EXECUTIVE));
-        Grade regularGrade = gradeRepository.save(new Grade(GradeType.REGULAR));
-        Grade generalGrade = gradeRepository.save(new Grade(GradeType.GENERAL));
+        executiveGrade = gradeRepository.save(new Grade(GradeType.EXECUTIVE));
+        regularGrade = gradeRepository.save(new Grade(GradeType.REGULAR));
+        generalGrade = gradeRepository.save(new Grade(GradeType.GENERAL));
         executive = memberRepository.save(getExecutiveMember());
         regular = memberRepository.save(getRegularMember());
         general = memberRepository.save(getGeneralMember());
