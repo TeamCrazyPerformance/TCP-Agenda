@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
+import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
 import tcp.project.agenda.agenda.exception.InvalidTitleException;
 import tcp.project.agenda.agenda.exception.NotMemberAgendaException;
@@ -98,5 +99,28 @@ class AgendaTest {
             .isInstanceOf(NotMemberAgendaException.class);
     }
 
+    @Test
+    @DisplayName("안건이 마감 되어야 함")
+    void closeTest() throws Exception {
+        //given
+        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, grade, BASIC_AGENDA_CLOSED_AT);
 
+        //when
+        agenda.close();
+
+        //then
+        assertThat(agenda.isClosed()).isTrue();
+    }
+
+    @Test
+    @DisplayName("안건이 마감 되어야 함")
+    void closeTest_alreadyClosedException() throws Exception {
+        //given
+        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, grade, BASIC_AGENDA_CLOSED_AT);
+        agenda.close();
+
+        //when then
+        assertThatThrownBy(agenda::close)
+                .isInstanceOf(AgendaAlreadyClosedException.class);
+    }
 }
