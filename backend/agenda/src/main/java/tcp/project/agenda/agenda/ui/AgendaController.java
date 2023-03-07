@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tcp.project.agenda.agenda.application.AgendaService;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
+import tcp.project.agenda.agenda.application.dto.VoteRequest;
 import tcp.project.agenda.auth.ui.Authenticated;
 
 @RestController
@@ -27,6 +28,12 @@ public class AgendaController {
     @PostMapping("/{agendaId}")
     public ResponseEntity<Void> closeAgenda(@Authenticated Long memberId, @PathVariable Long agendaId) {
         agendaService.closeAgenda(memberId, agendaId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{agendaId}/vote")
+    public ResponseEntity<Void> vote(@Authenticated Long memberId, @PathVariable Long agendaId, @RequestBody VoteRequest request) {
+        agendaService.vote(memberId, agendaId, request);
         return ResponseEntity.ok().build();
     }
 }
