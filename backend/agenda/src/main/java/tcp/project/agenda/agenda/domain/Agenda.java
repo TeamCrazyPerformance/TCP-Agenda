@@ -97,6 +97,7 @@ public class Agenda extends BaseEntity {
     }
 
     public void close() {
+        validateAlreadyClosed();
         this.closed = true;
     }
 
