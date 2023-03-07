@@ -2,6 +2,8 @@ package tcp.project.agenda.common.fixture;
 
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
 import tcp.project.agenda.agenda.application.dto.AgendaItemDto;
+import tcp.project.agenda.agenda.application.dto.SelectedAgendaItemDto;
+import tcp.project.agenda.agenda.application.dto.VoteRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,5 +28,13 @@ public class AgendaFixture {
 
     public static AgendaCreateRequest getInvalidClosedAtAgendaCreateRequest() {
         return new AgendaCreateRequest(BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, BASIC_AGENDA_TARGET, LocalDateTime.now(), BASIC_AGENDA_SELECTED_LIST_DTO);
+    }
+
+    public static VoteRequest getBasicVoteRequest() {
+        return new VoteRequest(List.of(new SelectedAgendaItemDto(1L), new SelectedAgendaItemDto(2L)));
+    }
+
+    public static VoteRequest getNotExistSelectItemVoteRequest() {
+        return new VoteRequest(List.of(new SelectedAgendaItemDto(9999L)));
     }
 }

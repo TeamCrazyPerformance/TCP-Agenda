@@ -4,9 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
+import tcp.project.agenda.agenda.application.dto.SelectedAgendaItemDto;
+import tcp.project.agenda.agenda.application.dto.VoteRequest;
 import tcp.project.agenda.agenda.domain.Agenda;
 import tcp.project.agenda.agenda.domain.AgendaItem;
+import tcp.project.agenda.agenda.domain.AgendaItemRepository;
 import tcp.project.agenda.agenda.domain.AgendaRepository;
+import tcp.project.agenda.agenda.domain.Vote;
+import tcp.project.agenda.agenda.domain.VoteRepository;
+import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
 import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
 import tcp.project.agenda.auth.exception.MemberNotFoundException;
 import tcp.project.agenda.auth.exception.NoSuchGradeException;
@@ -27,6 +33,8 @@ public class AgendaService {
     private final MemberRepository memberRepository;
     private final AgendaRepository agendaRepository;
     private final GradeRepository gradeRepository;
+    private final AgendaItemRepository agendaItemRepository;
+    private final VoteRepository voteRepository;
 
     @Transactional
     public void createAgenda(Long memberId, AgendaCreateRequest request) {
@@ -40,7 +48,7 @@ public class AgendaService {
         agendaRepository.save(agenda);
     }
 
-    private static List<AgendaItem> getAgendaItems(AgendaCreateRequest request, Agenda agenda) {
+    private List<AgendaItem> getAgendaItems(AgendaCreateRequest request, Agenda agenda) {
         return request.getSelectList().stream()
                 .map(agendaItemDto -> AgendaItem.createAgendaItem(agenda, agendaItemDto.getContent()))
                 .collect(Collectors.toList());
@@ -50,8 +58,47 @@ public class AgendaService {
     public void closeAgenda(Long memberId, Long agendaId) {
         Agenda agenda = findAgenda(agendaId);
         agenda.validateOwner(memberId);
+        agenda.validateAlreadyClosed();
 
         agenda.close();
+    }
+
+    @Transactional
+    public void vote(Long memberId, Long agendaId, VoteRequest request) {
+        Agenda agenda = findAgenda(agendaId);
+        Member member = findMember(memberId);
+        agenda.validateAlreadyClosed();
+
+        List<Long> agendaItemIdList = getAgendaItemIdList(agenda);
+
+        List<Long> idList = getIdList(request);
+        validateExistAgendaItem(agendaItemIdList, idList);
+        List<AgendaItem> selectedAgendaItems = agendaItemRepository.findByIdIn(idList);
+
+        selectedAgendaItems.stream()
+                .map(agendaItem -> Vote.createVote(member, agendaItem, agenda))
+                .forEach(voteRepository::save);
+    }
+
+    private List<Long> getAgendaItemIdList(Agenda agenda) {
+        return agenda.getAgendaItems().stream()
+                .map(AgendaItem::getId)
+                .collect(Collectors.toList());
+    }
+
+    private void validateExistAgendaItem(List<Long> agendaItemIdList, List<Long> idList) {
+        idList.stream()
+                .filter(voteId -> !agendaItemIdList.contains(voteId))
+                .findAny()
+                .ifPresent(voteId -> {
+                    throw new AgendaItemNotFoundException(voteId);
+                });
+    }
+
+    private List<Long> getIdList(VoteRequest request) {
+        return request.getSelectList().stream()
+                .map(SelectedAgendaItemDto::getId)
+                .collect(Collectors.toList());
     }
 
     private Agenda findAgenda(Long agendaId) {

@@ -101,7 +101,7 @@ public class Agenda extends BaseEntity {
         this.closed = true;
     }
 
-    private void validateAlreadyClosed() {
+    public void validateAlreadyClosed() {
         if (isClosed()) {
             throw new AgendaAlreadyClosedException();
         }

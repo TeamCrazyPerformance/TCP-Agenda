@@ -113,7 +113,7 @@ class AgendaTest {
     }
 
     @Test
-    @DisplayName("안건이 마감 되어야 함")
+    @DisplayName("이미 마감이 된 안건인 경우 예외가 발생해야 함")
     void closeTest_alreadyClosedException() throws Exception {
         //given
         Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, grade, BASIC_AGENDA_CLOSED_AT);
