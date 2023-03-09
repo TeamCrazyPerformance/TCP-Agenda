@@ -1,4 +1,4 @@
-package tcp.project.agenda.agenda.application;
+package tcp.project.agenda.agenda.application.validator;
 
 import org.springframework.util.StringUtils;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;

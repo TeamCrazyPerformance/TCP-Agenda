@@ -1,4 +1,4 @@
-package tcp.project.agenda.agenda.application;
+package tcp.project.agenda.agenda.application.validator;
 
 import tcp.project.agenda.agenda.application.dto.VoteRequest;
 import tcp.project.agenda.common.exception.ValidationError;
