@@ -1,4 +1,4 @@
-package tcp.project.agenda.auth.application;
+package tcp.project.agenda.auth.application.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

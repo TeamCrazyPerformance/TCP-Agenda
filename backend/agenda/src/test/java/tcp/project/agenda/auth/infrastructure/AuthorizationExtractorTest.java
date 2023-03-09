@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import tcp.project.agenda.auth.exception.AuthExtractException;
+import tcp.project.agenda.auth.ui.AuthorizationExtractor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

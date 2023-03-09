@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tcp.project.agenda.auth.application.AuthService;
-import tcp.project.agenda.auth.application.LoginRequest;
-import tcp.project.agenda.auth.application.TokenResponse;
+import tcp.project.agenda.auth.application.dto.LoginRequest;
+import tcp.project.agenda.auth.ui.dto.TokenResponse;
 
 @RestController
 @RequestMapping("/auth")

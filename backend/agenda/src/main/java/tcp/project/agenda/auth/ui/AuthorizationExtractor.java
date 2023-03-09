@@ -1,4 +1,4 @@
-package tcp.project.agenda.auth.infrastructure;
+package tcp.project.agenda.auth.ui;
 
 import org.springframework.util.StringUtils;
 import tcp.project.agenda.auth.exception.AuthExtractException;
