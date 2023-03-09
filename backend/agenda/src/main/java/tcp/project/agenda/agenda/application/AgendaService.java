@@ -40,10 +40,7 @@ public class AgendaService {
 
     @Transactional
     public void createAgenda(Long memberId, AgendaCreateRequest request) {
-        List<ValidationError> errors = validateAgendaCreateRequest(request);
-        if (!errors.isEmpty()) {
-            throw new ValidationException(errors);
-        }
+        validateAgendaCreateRequest(request);
         Member member = findMember(memberId);
         Grade target = findGrade(request);
 
@@ -54,9 +51,12 @@ public class AgendaService {
         agendaRepository.save(agenda);
     }
 
-    private List<ValidationError> validateAgendaCreateRequest(AgendaCreateRequest request) {
+    private void validateAgendaCreateRequest(AgendaCreateRequest request) {
         AgendaCreateValidator validator = new AgendaCreateValidator();
-        return validator.validate(request);
+        List<ValidationError> errors = validator.validate(request);
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
     }
 
     private List<AgendaItem> getAgendaItems(AgendaCreateRequest request, Agenda agenda) {
@@ -76,6 +76,7 @@ public class AgendaService {
 
     @Transactional
     public void vote(Long memberId, Long agendaId, VoteRequest request) {
+        validateVoteRequest(request);
         Agenda agenda = findAgenda(agendaId);
         Member member = findMember(memberId);
         agenda.validateAlreadyClosed();
@@ -89,6 +90,14 @@ public class AgendaService {
         selectedAgendaItems.stream()
                 .map(agendaItem -> Vote.createVote(member, agendaItem, agenda))
                 .forEach(voteRepository::save);
+    }
+
+    private void validateVoteRequest(VoteRequest request) {
+        VoteValidator validator = new VoteValidator();
+        List<ValidationError> errors = validator.validate(request);
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
     }
 
     private List<Long> getAgendaItemIdList(Agenda agenda) {
