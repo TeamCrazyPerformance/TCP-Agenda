@@ -16,6 +16,8 @@ import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
 import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
 import tcp.project.agenda.auth.exception.MemberNotFoundException;
 import tcp.project.agenda.auth.exception.NoSuchGradeException;
+import tcp.project.agenda.common.exception.ValidationError;
+import tcp.project.agenda.common.exception.ValidationException;
 import tcp.project.agenda.member.domain.Grade;
 import tcp.project.agenda.member.domain.GradeRepository;
 import tcp.project.agenda.member.domain.GradeType;
@@ -38,6 +40,10 @@ public class AgendaService {
 
     @Transactional
     public void createAgenda(Long memberId, AgendaCreateRequest request) {
+        List<ValidationError> errors = validateAgendaCreateRequest(request);
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
         Member member = findMember(memberId);
         Grade target = findGrade(request);
 
@@ -46,6 +52,11 @@ public class AgendaService {
         agenda.addAgendaItems(agendaItems);
 
         agendaRepository.save(agenda);
+    }
+
+    private List<ValidationError> validateAgendaCreateRequest(AgendaCreateRequest request) {
+        AgendaCreateValidator validator = new AgendaCreateValidator();
+        return validator.validate(request);
     }
 
     private List<AgendaItem> getAgendaItems(AgendaCreateRequest request, Agenda agenda) {

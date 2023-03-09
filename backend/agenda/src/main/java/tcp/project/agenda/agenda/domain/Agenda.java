@@ -3,10 +3,8 @@ package tcp.project.agenda.agenda.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.util.StringUtils;
 import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
-import tcp.project.agenda.agenda.exception.InvalidTitleException;
 import tcp.project.agenda.agenda.exception.NotAgendaOwnerException;
 import tcp.project.agenda.common.entity.BaseEntity;
 import tcp.project.agenda.member.domain.Grade;
@@ -68,16 +66,9 @@ public class Agenda extends BaseEntity {
     }
 
     public static Agenda createAgendaFrom(Member member, String title, String content, Grade target, LocalDateTime closedAt) {
-        validateTitle(title);
         validateClosedAt(closedAt);
         content = Optional.ofNullable(content).orElse("");
         return new Agenda(member, title, content, target, closedAt);
-    }
-
-    private static void validateTitle(String title) {
-        if (!StringUtils.hasText(title)) {
-            throw new InvalidTitleException();
-        }
     }
 
     private static void validateClosedAt(LocalDateTime closedAt) {
