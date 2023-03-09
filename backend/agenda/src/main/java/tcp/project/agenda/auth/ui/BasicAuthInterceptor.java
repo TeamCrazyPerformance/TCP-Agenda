@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import tcp.project.agenda.auth.infrastructure.AuthorizationExtractor;
 import tcp.project.agenda.auth.infrastructure.JwtTokenProvider;
 
 import javax.servlet.http.HttpServletRequest;

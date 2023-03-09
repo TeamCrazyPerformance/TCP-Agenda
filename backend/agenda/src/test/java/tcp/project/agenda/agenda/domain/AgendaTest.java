@@ -8,7 +8,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
 import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
-import tcp.project.agenda.agenda.exception.InvalidTitleException;
 import tcp.project.agenda.agenda.exception.NotAgendaOwnerException;
 import tcp.project.agenda.member.domain.Grade;
 import tcp.project.agenda.member.domain.Member;
@@ -23,7 +22,6 @@ import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CONTE
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_TITLE;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaCreateRequest;
-import static tcp.project.agenda.common.fixture.AgendaFixture.getNoTitleAgendaCreateRequest;
 
 @ExtendWith(MockitoExtension.class)
 class AgendaTest {
@@ -49,17 +47,6 @@ class AgendaTest {
                 () -> assertThat(agenda.getContent()).isEqualTo(""),
                 () -> assertThat(agenda.getClosedAt()).isEqualTo(request.getClosedAt())
         );
-    }
-
-    @Test
-    @DisplayName("안건 제목이 비었을 경우 예외가 발생해야 함")
-    void createAgendaTest_invalidTitle() throws Exception {
-        //given
-        AgendaCreateRequest request = getNoTitleAgendaCreateRequest();
-
-        //when then
-        assertThatThrownBy(() -> Agenda.createAgendaFrom(member, request.getTitle(), request.getContent(), grade, request.getClosedAt()))
-                .isInstanceOf(InvalidTitleException.class);
     }
 
     @Test

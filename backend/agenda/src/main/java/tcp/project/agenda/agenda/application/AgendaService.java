@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
 import tcp.project.agenda.agenda.application.dto.SelectedAgendaItemDto;
 import tcp.project.agenda.agenda.application.dto.VoteRequest;
+import tcp.project.agenda.agenda.application.validator.AgendaCreateValidator;
+import tcp.project.agenda.agenda.application.validator.VoteValidator;
 import tcp.project.agenda.agenda.domain.Agenda;
 import tcp.project.agenda.agenda.domain.AgendaItem;
 import tcp.project.agenda.agenda.domain.AgendaItemRepository;
@@ -16,6 +18,8 @@ import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
 import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
 import tcp.project.agenda.auth.exception.MemberNotFoundException;
 import tcp.project.agenda.auth.exception.NoSuchGradeException;
+import tcp.project.agenda.common.exception.ValidationError;
+import tcp.project.agenda.common.exception.ValidationException;
 import tcp.project.agenda.member.domain.Grade;
 import tcp.project.agenda.member.domain.GradeRepository;
 import tcp.project.agenda.member.domain.GradeType;
@@ -38,6 +42,7 @@ public class AgendaService {
 
     @Transactional
     public void createAgenda(Long memberId, AgendaCreateRequest request) {
+        validateAgendaCreateRequest(request);
         Member member = findMember(memberId);
         Grade target = findGrade(request);
 
@@ -46,6 +51,14 @@ public class AgendaService {
         agenda.addAgendaItems(agendaItems);
 
         agendaRepository.save(agenda);
+    }
+
+    private void validateAgendaCreateRequest(AgendaCreateRequest request) {
+        AgendaCreateValidator validator = new AgendaCreateValidator();
+        List<ValidationError> errors = validator.validate(request);
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
     }
 
     private List<AgendaItem> getAgendaItems(AgendaCreateRequest request, Agenda agenda) {
@@ -65,6 +78,7 @@ public class AgendaService {
 
     @Transactional
     public void vote(Long memberId, Long agendaId, VoteRequest request) {
+        validateVoteRequest(request);
         Agenda agenda = findAgenda(agendaId);
         Member member = findMember(memberId);
         agenda.validateAlreadyClosed();
@@ -78,6 +92,14 @@ public class AgendaService {
         selectedAgendaItems.stream()
                 .map(agendaItem -> Vote.createVote(member, agendaItem, agenda))
                 .forEach(voteRepository::save);
+    }
+
+    private void validateVoteRequest(VoteRequest request) {
+        VoteValidator validator = new VoteValidator();
+        List<ValidationError> errors = validator.validate(request);
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
     }
 
     private List<Long> getAgendaItemIdList(Agenda agenda) {

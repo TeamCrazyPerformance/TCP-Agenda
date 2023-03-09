@@ -22,8 +22,8 @@ public class AgendaFixture {
         return new AgendaCreateRequest(BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, BASIC_AGENDA_TARGET, BASIC_AGENDA_CLOSED_AT, BASIC_AGENDA_SELECTED_LIST_DTO);
     }
 
-    public static AgendaCreateRequest getNoTitleAgendaCreateRequest() {
-        return new AgendaCreateRequest("", BASIC_AGENDA_CONTENT, BASIC_AGENDA_TARGET, BASIC_AGENDA_CLOSED_AT, BASIC_AGENDA_SELECTED_LIST_DTO);
+    public static AgendaCreateRequest getInvalidAgendaCreateRequest() {
+        return new AgendaCreateRequest(null, null, null, null, null);
     }
 
     public static AgendaCreateRequest getInvalidClosedAtAgendaCreateRequest() {
@@ -32,6 +32,10 @@ public class AgendaFixture {
 
     public static VoteRequest getBasicVoteRequest() {
         return new VoteRequest(List.of(new SelectedAgendaItemDto(1L), new SelectedAgendaItemDto(2L)));
+    }
+
+    public static VoteRequest getInvalidVoteRequest() {
+        return new VoteRequest(null);
     }
 
     public static VoteRequest getNotExistSelectItemVoteRequest() {

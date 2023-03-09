@@ -10,7 +10,6 @@ import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
 import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
 import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
-import tcp.project.agenda.agenda.exception.InvalidTitleException;
 import tcp.project.agenda.agenda.exception.NotAgendaOwnerException;
 import tcp.project.agenda.common.support.MockControllerTest;
 
@@ -23,7 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaCreateRequest;
-import static tcp.project.agenda.common.fixture.AgendaFixture.getNoTitleAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AuthFixture.ACCESS_TOKEN;
 
 class AgendaControllerTest extends MockControllerTest {
@@ -46,23 +44,6 @@ class AgendaControllerTest extends MockControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
-    }
-
-    @Test
-    @DisplayName("title이 없는 요청인 경우 400을 응답해야 함")
-    void createAgendaTest_invalidTitle() throws Exception {
-        //given
-        AgendaCreateRequest request = getNoTitleAgendaCreateRequest();
-        doThrow(new InvalidTitleException())
-                .when(agendaService)
-                .createAgenda(any(), any());
-
-        //when then
-        mockMvc.perform(post("/agenda")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
     }
 
     @Test

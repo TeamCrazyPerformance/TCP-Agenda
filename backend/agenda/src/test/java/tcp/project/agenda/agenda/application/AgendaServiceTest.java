@@ -14,22 +14,20 @@ import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
 import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
 import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
-import tcp.project.agenda.agenda.exception.InvalidTitleException;
 import tcp.project.agenda.agenda.exception.NotAgendaOwnerException;
 import tcp.project.agenda.auth.exception.MemberNotFoundException;
+import tcp.project.agenda.common.exception.ValidationException;
 import tcp.project.agenda.common.support.ApplicationServiceTest;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CLOSED_AT;
-import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CONTENT;
-import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_TITLE;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteRequest;
+import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaCreateRequest;
-import static tcp.project.agenda.common.fixture.AgendaFixture.getNoTitleAgendaCreateRequest;
+import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidVoteRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getNotExistSelectItemVoteRequest;
 
 class AgendaServiceTest extends ApplicationServiceTest {
@@ -64,14 +62,14 @@ class AgendaServiceTest extends ApplicationServiceTest {
     }
 
     @Test
-    @DisplayName("안건 제목이 비었을 경우 예외가 발생해야 함")
-    void createAgendaTest_invalidTitle() throws Exception {
+    @DisplayName("요청 body가 잘못 되었을 경우 예외가 발생해야 함")
+    void createAgendaTest_invalidRequest() throws Exception {
         //given
-        AgendaCreateRequest request = getNoTitleAgendaCreateRequest();
+        AgendaCreateRequest request = getInvalidAgendaCreateRequest();
 
         //when then
         assertThatThrownBy(() -> agendaService.createAgenda(executive.getId(), request))
-            .isInstanceOf(InvalidTitleException.class);
+                .isInstanceOf(ValidationException.class);
     }
 
     @Test
@@ -146,6 +144,16 @@ class AgendaServiceTest extends ApplicationServiceTest {
         //then
         List<Vote> voteList = voteRepository.findAll();
         assertThat(voteList).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("잘못된 body일 경우 예외가 발생해야 함")
+    void voteTest_invalidRequest() throws Exception {
+        //given
+
+        //when then
+        assertThatThrownBy(() -> agendaService.vote(general.getId(), 1L, getInvalidVoteRequest()))
+                .isInstanceOf(ValidationException.class);
     }
 
     @Test

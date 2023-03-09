@@ -4,6 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import tcp.project.agenda.auth.application.dto.LoginRequest;
+import tcp.project.agenda.auth.ui.dto.TokenResponse;
 import tcp.project.agenda.common.support.ApplicationServiceTest;
 import tcp.project.agenda.auth.exception.InvalidPasswordException;
 import tcp.project.agenda.auth.exception.MemberNotFoundException;

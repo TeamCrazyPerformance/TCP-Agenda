@@ -1,7 +1,7 @@
 package tcp.project.agenda.common.fixture;
 
-import tcp.project.agenda.auth.application.LoginRequest;
-import tcp.project.agenda.auth.application.TokenResponse;
+import tcp.project.agenda.auth.application.dto.LoginRequest;
+import tcp.project.agenda.auth.ui.dto.TokenResponse;
 
 import static tcp.project.agenda.common.fixture.MemberFixture.REGULAR_PASSWORD;
 import static tcp.project.agenda.common.fixture.MemberFixture.REGULAR_UNIV_ID;
