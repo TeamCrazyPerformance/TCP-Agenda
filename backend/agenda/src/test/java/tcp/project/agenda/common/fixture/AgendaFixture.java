@@ -25,13 +25,17 @@ public class AgendaFixture {
     public static AgendaCreateRequest getInvalidAgendaCreateRequest() {
         return new AgendaCreateRequest(null, null, null, null, null);
     }
-    
+
     public static AgendaCreateRequest getInvalidClosedAtAgendaCreateRequest() {
         return new AgendaCreateRequest(BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, BASIC_AGENDA_TARGET, LocalDateTime.now(), BASIC_AGENDA_SELECTED_LIST_DTO);
     }
 
     public static VoteRequest getBasicVoteRequest() {
         return new VoteRequest(List.of(new SelectedAgendaItemDto(1L), new SelectedAgendaItemDto(2L)));
+    }
+
+    public static VoteRequest getInvalidVoteRequest() {
+        return new VoteRequest(null);
     }
 
     public static VoteRequest getNotExistSelectItemVoteRequest() {

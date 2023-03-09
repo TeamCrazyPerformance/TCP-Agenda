@@ -27,6 +27,7 @@ import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCrea
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaCreateRequest;
+import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidVoteRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getNotExistSelectItemVoteRequest;
 
 class AgendaServiceTest extends ApplicationServiceTest {
@@ -143,6 +144,16 @@ class AgendaServiceTest extends ApplicationServiceTest {
         //then
         List<Vote> voteList = voteRepository.findAll();
         assertThat(voteList).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("잘못된 body일 경우 예외가 발생해야 함")
+    void voteTest_invalidRequest() throws Exception {
+        //given
+
+        //when then
+        assertThatThrownBy(() -> agendaService.vote(general.getId(), 1L, getInvalidVoteRequest()))
+                .isInstanceOf(ValidationException.class);
     }
 
     @Test
