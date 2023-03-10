@@ -123,6 +123,12 @@ public class AgendaService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public void cancelVote(Long memberId, Long agendaId) {
+        List<Vote> votes = voteRepository.findByMember_IdAndAgenda_Id(memberId, agendaId);
+        voteRepository.deleteAllInBatch(votes);
+    }
+
     private Agenda findAgenda(Long agendaId) {
         return agendaRepository.findById(agendaId)
                 .orElseThrow(() -> new AgendaNotFoundException(agendaId));

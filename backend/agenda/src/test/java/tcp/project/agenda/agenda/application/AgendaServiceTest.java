@@ -203,4 +203,19 @@ class AgendaServiceTest extends ApplicationServiceTest {
         assertThatThrownBy(() -> agendaService.vote(general.getId(), 1L, getNotExistSelectItemVoteRequest()))
                 .isInstanceOf(AgendaItemNotFoundException.class);
     }
+
+    @Test
+    @DisplayName("투표가 지워져야 함")
+    void voteCancelTest() throws Exception {
+        //given
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+        agendaService.vote(general.getId(), 1L, getBasicVoteRequest());
+
+        //when
+        agendaService.cancelVote(general.getId(), 1L);
+
+        //then
+        List<Vote> votes = voteRepository.findAll();
+        assertThat(votes).hasSize(0);
+    }
 }

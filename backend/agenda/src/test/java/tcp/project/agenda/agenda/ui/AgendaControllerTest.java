@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
@@ -193,5 +194,16 @@ class AgendaControllerTest extends MockControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(getBasicVoteRequest())))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("투표를 취소하면 200을 응답해야 함")
+    void voteCancelTest() throws Exception {
+        //given
+
+        //when then
+        mockMvc.perform(delete("/agenda/1/cancel")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN))
+                .andExpect(status().isOk());
     }
 }
