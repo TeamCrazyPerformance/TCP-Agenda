@@ -31,7 +31,6 @@ import tcp.project.agenda.member.domain.Member;
 import tcp.project.agenda.member.domain.MemberRepository;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
