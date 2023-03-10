@@ -4,6 +4,8 @@ import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
 import tcp.project.agenda.agenda.application.dto.AgendaItemDto;
 import tcp.project.agenda.agenda.application.dto.SelectedAgendaItemDto;
 import tcp.project.agenda.agenda.application.dto.VoteRequest;
+import tcp.project.agenda.agenda.ui.dto.AgendaDto;
+import tcp.project.agenda.agenda.ui.dto.AgendaListResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,7 +21,7 @@ public class AgendaFixture {
     public static final List<AgendaItemDto> BASIC_AGENDA_SELECTED_LIST_DTO = List.of(new AgendaItemDto(BASIC_AGENDA_ITEM1), new AgendaItemDto(BASIC_AGENDA_ITEM2));
 
     public static AgendaCreateRequest getBasicAgendaCreateRequest() {
-        return new AgendaCreateRequest(BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, BASIC_AGENDA_TARGET, BASIC_AGENDA_CLOSED_AT, BASIC_AGENDA_SELECTED_LIST_DTO);
+        return new AgendaCreateRequest(BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, BASIC_AGENDA_TARGET, BASIC_AGENDA_SELECTED_LIST_DTO, BASIC_AGENDA_CLOSED_AT);
     }
 
     public static AgendaCreateRequest getInvalidAgendaCreateRequest() {
@@ -27,7 +29,7 @@ public class AgendaFixture {
     }
 
     public static AgendaCreateRequest getInvalidClosedAtAgendaCreateRequest() {
-        return new AgendaCreateRequest(BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, BASIC_AGENDA_TARGET, LocalDateTime.now(), BASIC_AGENDA_SELECTED_LIST_DTO);
+        return new AgendaCreateRequest(BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, BASIC_AGENDA_TARGET, BASIC_AGENDA_SELECTED_LIST_DTO, LocalDateTime.now());
     }
 
     public static VoteRequest getBasicVoteRequest() {
@@ -40,5 +42,9 @@ public class AgendaFixture {
 
     public static VoteRequest getNotExistSelectItemVoteRequest() {
         return new VoteRequest(List.of(new SelectedAgendaItemDto(9999L)));
+    }
+
+    public static AgendaListResponse getBasicAgendaListResponse() {
+        return new AgendaListResponse(List.of(), 0, false);
     }
 }
