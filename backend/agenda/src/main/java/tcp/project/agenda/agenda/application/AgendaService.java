@@ -82,11 +82,11 @@ public class AgendaService {
         return agendaPage.getContent().stream()
                 .map(agenda -> new AgendaDto(agenda.getId(),
                         agenda.getTitle(),
-                        agenda.getCreatedDate(),
-                        agenda.getClosedAt(),
                         agenda.getTarget().getCode(),
                         voteRepository.countDistinctMember(agenda),
-                        agenda.isClosed()))
+                        agenda.getCreatedDate(),
+                        agenda.getClosedAt(),
+                        !agenda.isClosed()))
                 .collect(Collectors.toList());
     }
 
