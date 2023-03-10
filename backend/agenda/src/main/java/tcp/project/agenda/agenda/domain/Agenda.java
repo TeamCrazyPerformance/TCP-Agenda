@@ -8,6 +8,7 @@ import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
 import tcp.project.agenda.agenda.exception.NotAgendaOwnerException;
 import tcp.project.agenda.common.entity.BaseEntity;
 import tcp.project.agenda.member.domain.Grade;
+import tcp.project.agenda.member.domain.GradeType;
 import tcp.project.agenda.member.domain.Member;
 
 import javax.persistence.CascadeType;
@@ -96,5 +97,9 @@ public class Agenda extends BaseEntity {
         if (isClosed()) {
             throw new AgendaAlreadyClosedException();
         }
+    }
+
+    public GradeType getTarget() {
+        return target.getGradeType();
     }
 }

@@ -3,6 +3,8 @@ package tcp.project.agenda.agenda.application;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
 import tcp.project.agenda.agenda.domain.Agenda;
 import tcp.project.agenda.agenda.domain.AgendaItem;
@@ -15,6 +17,8 @@ import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
 import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
 import tcp.project.agenda.agenda.exception.NotAgendaOwnerException;
+import tcp.project.agenda.agenda.ui.dto.AgendaDto;
+import tcp.project.agenda.agenda.ui.dto.AgendaListResponse;
 import tcp.project.agenda.auth.exception.MemberNotFoundException;
 import tcp.project.agenda.common.exception.ValidationException;
 import tcp.project.agenda.common.support.ApplicationServiceTest;
@@ -217,5 +221,64 @@ class AgendaServiceTest extends ApplicationServiceTest {
         //then
         List<Vote> votes = voteRepository.findAll();
         assertThat(votes).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("안건 전체 조회 - 투표한 사람 없는 경우")
+    void getAgendaListTest_noVotedMember() throws Exception {
+        //given
+        Pageable pageable = PageRequest.of(0, 10);
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+
+        //when
+        AgendaListResponse response = agendaService.getAgendaList(pageable);
+
+        //then
+        List<AgendaDto> agendaList = response.getAgendaList();
+        assertThat(response.getPageNumber()).isEqualTo(0);
+        assertThat(response.isHasNext()).isFalse();
+        assertThat(agendaList).hasSize(1);
+        assertThat(agendaList.get(0).getVotedMember()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("안건 전체 조회 - 투표한 사람 있는 경우")
+    void getAgendaListTest_hasVotedMember() throws Exception {
+        //given
+        Pageable pageable = PageRequest.of(0, 10);
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+        agendaService.vote(regular.getId(), 1L, getBasicVoteRequest());
+        agendaService.vote(general.getId(), 1L, getBasicVoteRequest());
+        agendaService.vote(executive.getId(), 1L, getBasicVoteRequest());
+
+        //when
+        AgendaListResponse response = agendaService.getAgendaList(pageable);
+
+        //then
+        List<AgendaDto> agendaList = response.getAgendaList();
+        assertThat(response.getPageNumber()).isEqualTo(0);
+        assertThat(response.isHasNext()).isFalse();
+        assertThat(agendaList).hasSize(1);
+        assertThat(agendaList.get(0).getVotedMember()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("안건 전체 조회 - 투표가 많은 경우")
+    void getAgendaListTest_lotOfVotes() throws Exception {
+        //given
+        Pageable pageable = PageRequest.of(0, 10);
+        for (int i = 0; i < 15; i++) {
+            agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+        }
+
+        //when
+        AgendaListResponse response = agendaService.getAgendaList(pageable);
+
+        //then
+        List<AgendaDto> agendaList = response.getAgendaList();
+        assertThat(response.getPageNumber()).isEqualTo(0);
+        assertThat(response.isHasNext()).isTrue();
+        assertThat(agendaList).hasSize(10);
+        assertThat(agendaList.get(0).getVotedMember()).isEqualTo(0);
     }
 }

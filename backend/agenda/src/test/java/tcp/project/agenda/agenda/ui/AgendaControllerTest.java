@@ -11,6 +11,7 @@ import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
 import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
 import tcp.project.agenda.agenda.exception.NotAgendaOwnerException;
+import tcp.project.agenda.agenda.ui.dto.AgendaListResponse;
 import tcp.project.agenda.common.support.MockControllerTest;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -18,9 +19,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
+import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaListResponse;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AuthFixture.ACCESS_TOKEN;
@@ -205,5 +209,20 @@ class AgendaControllerTest extends MockControllerTest {
         mockMvc.perform(delete("/agenda/1/cancel")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("전체 안건을 조회하면 올바른 데이터와 200을 응답해야 함")
+    void findAgendaListTest() throws Exception {
+        //given
+        AgendaListResponse response = getBasicAgendaListResponse();
+        given(agendaService.getAgendaList(any()))
+                .willReturn(response);
+
+        //when then
+        mockMvc.perform(get("/agenda")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN))
+                .andExpect(status().isOk())
+                .andExpect(content().json(mapper.writeValueAsString(response)));
     }
 }

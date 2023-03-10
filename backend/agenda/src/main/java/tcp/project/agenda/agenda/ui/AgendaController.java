@@ -1,8 +1,11 @@
 package tcp.project.agenda.agenda.ui;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tcp.project.agenda.agenda.application.AgendaService;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
 import tcp.project.agenda.agenda.application.dto.VoteRequest;
+import tcp.project.agenda.agenda.ui.dto.AgendaListResponse;
 import tcp.project.agenda.auth.ui.Authenticated;
 
 @RestController
@@ -42,5 +46,11 @@ public class AgendaController {
     public ResponseEntity<Void> cancelVote(@Authenticated Long memberId, @PathVariable Long agendaId) {
         agendaService.cancelVote(memberId, agendaId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("")
+    public ResponseEntity<AgendaListResponse> getAgendaList(@Authenticated Long memberId, @PageableDefault Pageable pageable) {
+        AgendaListResponse response = agendaService.getAgendaList(pageable);
+        return ResponseEntity.ok(response);
     }
 }
