@@ -1,6 +1,8 @@
 package tcp.project.agenda.agenda.application;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
@@ -16,6 +18,8 @@ import tcp.project.agenda.agenda.domain.Vote;
 import tcp.project.agenda.agenda.domain.VoteRepository;
 import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
 import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
+import tcp.project.agenda.agenda.ui.dto.AgendaDto;
+import tcp.project.agenda.agenda.ui.dto.AgendaListResponse;
 import tcp.project.agenda.auth.exception.MemberNotFoundException;
 import tcp.project.agenda.auth.exception.NoSuchGradeException;
 import tcp.project.agenda.common.exception.ValidationError;
@@ -27,6 +31,7 @@ import tcp.project.agenda.member.domain.Member;
 import tcp.project.agenda.member.domain.MemberRepository;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,6 +69,24 @@ public class AgendaService {
     private List<AgendaItem> getAgendaItems(AgendaCreateRequest request, Agenda agenda) {
         return request.getSelectList().stream()
                 .map(agendaItemDto -> AgendaItem.createAgendaItem(agenda, agendaItemDto.getContent()))
+                .collect(Collectors.toList());
+    }
+
+    public AgendaListResponse getAgendaList(Pageable pageable) {
+        Slice<Agenda> agendaPage = agendaRepository.findAll(pageable);
+        List<AgendaDto> agendaList = getAgendaDtoList(agendaPage);
+        return new AgendaListResponse(agendaList, agendaPage.getNumber(), agendaPage.hasNext());
+    }
+
+    private List<AgendaDto> getAgendaDtoList(Slice<Agenda> agendaPage) {
+        return agendaPage.getContent().stream()
+                .map(agenda -> new AgendaDto(agenda.getId(),
+                        agenda.getTitle(),
+                        agenda.getCreatedDate(),
+                        agenda.getClosedAt(),
+                        agenda.getTarget().getCode(),
+                        voteRepository.countDistinctMember(agenda),
+                        agenda.isClosed()))
                 .collect(Collectors.toList());
     }
 
