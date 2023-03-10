@@ -2,6 +2,7 @@ package tcp.project.agenda.agenda.ui;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +35,12 @@ public class AgendaController {
     @PostMapping("/{agendaId}/vote")
     public ResponseEntity<Void> vote(@Authenticated Long memberId, @PathVariable Long agendaId, @RequestBody VoteRequest request) {
         agendaService.vote(memberId, agendaId, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{agendaId}/cancel")
+    public ResponseEntity<Void> cancelVote(@Authenticated Long memberId, @PathVariable Long agendaId) {
+        agendaService.cancelVote(memberId, agendaId);
         return ResponseEntity.ok().build();
     }
 }
