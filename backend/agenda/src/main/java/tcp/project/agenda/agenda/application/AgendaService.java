@@ -31,7 +31,6 @@ import tcp.project.agenda.member.domain.Grade;
 import tcp.project.agenda.member.domain.GradeRepository;
 import tcp.project.agenda.member.domain.GradeType;
 import tcp.project.agenda.member.domain.Member;
-import tcp.project.agenda.member.domain.MemberGrade;
 import tcp.project.agenda.member.domain.MemberGradeRepository;
 import tcp.project.agenda.member.domain.MemberRepository;
 
@@ -110,22 +109,22 @@ public class AgendaService {
         Agenda agenda = findAgenda(agendaId);
         Member member = findMember(memberId);
 
-        List<Long> idList = getIdList(request);
+        List<Long> selectItemIdList = getIdList(request);
         List<Long> agendaItemIdList = getAgendaItemIdList(agenda);
 
-        validateVote(memberId, agendaId, agenda, member, idList, agendaItemIdList);
+        validateVote(agenda, member, selectItemIdList, agendaItemIdList);
 
-        List<AgendaItem> selectedAgendaItems = agendaItemRepository.findByIdIn(idList);
+        List<AgendaItem> selectedAgendaItems = agendaItemRepository.findByIdIn(selectItemIdList);
         selectedAgendaItems.stream()
                 .map(agendaItem -> Vote.createVote(member, agendaItem, agenda))
                 .forEach(voteRepository::save);
     }
 
-    private void validateVote(Long memberId, Long agendaId, Agenda agenda, Member member, List<Long> idList, List<Long> agendaItemIdList) {
+    private void validateVote(Agenda agenda, Member member, List<Long> selectItemIdList, List<Long> agendaItemIdList) {
         agenda.validateAlreadyClosed();
         agenda.validateIsTargetGrade(member.getGrades());
-        validateAlreadyVote(memberId, agendaId);
-        validateExistAgendaItem(agendaItemIdList, idList);
+        validateAlreadyVote(member.getId(), agenda.getId());
+        validateExistAgendaItem(agendaItemIdList, selectItemIdList);
     }
 
     private void validateAlreadyVote(Long memberId, Long agendaId) {
@@ -148,8 +147,8 @@ public class AgendaService {
                 .collect(Collectors.toList());
     }
 
-    private void validateExistAgendaItem(List<Long> agendaItemIdList, List<Long> idList) {
-        idList.stream()
+    private void validateExistAgendaItem(List<Long> agendaItemIdList, List<Long> selectItemIdList) {
+        selectItemIdList.stream()
                 .filter(voteId -> !agendaItemIdList.contains(voteId))
                 .findAny()
                 .ifPresent(voteId -> {
