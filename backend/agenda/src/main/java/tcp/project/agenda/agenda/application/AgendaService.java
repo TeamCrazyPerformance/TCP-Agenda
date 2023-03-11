@@ -103,8 +103,10 @@ public class AgendaService {
         validateVoteRequest(request);
         Agenda agenda = findAgenda(agendaId);
         Member member = findMember(memberId);
+
         agenda.validateAlreadyClosed();
         agenda.validateIsTargetGrade(member.getGrades());
+        validateAlreadyVote(memberId, agendaId);
 
         List<Long> agendaItemIdList = getAgendaItemIdList(agenda);
 
@@ -115,6 +117,12 @@ public class AgendaService {
         selectedAgendaItems.stream()
                 .map(agendaItem -> Vote.createVote(member, agendaItem, agenda))
                 .forEach(voteRepository::save);
+    }
+
+    private void validateAlreadyVote(Long memberId, Long agendaId) {
+        if (voteRepository.existsByMemberIdAndAgendaId(memberId, agendaId)) {
+            throw new AlreadyVoteException(agendaId);
+        }
     }
 
     private void validateVoteRequest(VoteRequest request) {
