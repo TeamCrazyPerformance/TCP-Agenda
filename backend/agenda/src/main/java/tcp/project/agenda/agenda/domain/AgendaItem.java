@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import java.util.List;
 
 @Getter
 @Entity
@@ -26,6 +28,9 @@ public class AgendaItem {
 
     private String content;
 
+    @OneToMany(mappedBy = "agendaItem")
+    private List<Vote> votes;
+
     public AgendaItem(Agenda agenda, String content) {
         this.agenda = agenda;
         this.content = content;
@@ -33,5 +38,9 @@ public class AgendaItem {
 
     public static AgendaItem createAgendaItem(Agenda agenda, String content) {
         return new AgendaItem(agenda, content);
+    }
+
+    public int getVoteCount() {
+        return votes.size();
     }
 }

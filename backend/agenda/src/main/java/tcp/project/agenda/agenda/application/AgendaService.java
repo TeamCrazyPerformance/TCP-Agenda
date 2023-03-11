@@ -18,8 +18,11 @@ import tcp.project.agenda.agenda.domain.Vote;
 import tcp.project.agenda.agenda.domain.VoteRepository;
 import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
 import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
+import tcp.project.agenda.agenda.exception.AlreadyVoteException;
 import tcp.project.agenda.agenda.ui.dto.AgendaDto;
 import tcp.project.agenda.agenda.ui.dto.AgendaListResponse;
+import tcp.project.agenda.agenda.ui.dto.AgendaResponse;
+import tcp.project.agenda.agenda.ui.dto.SelectItemDto;
 import tcp.project.agenda.auth.exception.MemberNotFoundException;
 import tcp.project.agenda.auth.exception.NoSuchGradeException;
 import tcp.project.agenda.common.exception.ValidationError;
@@ -28,6 +31,8 @@ import tcp.project.agenda.member.domain.Grade;
 import tcp.project.agenda.member.domain.GradeRepository;
 import tcp.project.agenda.member.domain.GradeType;
 import tcp.project.agenda.member.domain.Member;
+import tcp.project.agenda.member.domain.MemberGrade;
+import tcp.project.agenda.member.domain.MemberGradeRepository;
 import tcp.project.agenda.member.domain.MemberRepository;
 
 import java.util.List;
@@ -43,6 +48,7 @@ public class AgendaService {
     private final GradeRepository gradeRepository;
     private final AgendaItemRepository agendaItemRepository;
     private final VoteRepository voteRepository;
+    private final MemberGradeRepository memberGradeRepository;
 
     @Transactional
     public void createAgenda(Long memberId, AgendaCreateRequest request) {
@@ -104,19 +110,22 @@ public class AgendaService {
         Agenda agenda = findAgenda(agendaId);
         Member member = findMember(memberId);
 
-        agenda.validateAlreadyClosed();
-        agenda.validateIsTargetGrade(member.getGrades());
-        validateAlreadyVote(memberId, agendaId);
-
+        List<Long> idList = getIdList(request);
         List<Long> agendaItemIdList = getAgendaItemIdList(agenda);
 
-        List<Long> idList = getIdList(request);
-        validateExistAgendaItem(agendaItemIdList, idList);
-        List<AgendaItem> selectedAgendaItems = agendaItemRepository.findByIdIn(idList);
+        validateVote(memberId, agendaId, agenda, member, idList, agendaItemIdList);
 
+        List<AgendaItem> selectedAgendaItems = agendaItemRepository.findByIdIn(idList);
         selectedAgendaItems.stream()
                 .map(agendaItem -> Vote.createVote(member, agendaItem, agenda))
                 .forEach(voteRepository::save);
+    }
+
+    private void validateVote(Long memberId, Long agendaId, Agenda agenda, Member member, List<Long> idList, List<Long> agendaItemIdList) {
+        agenda.validateAlreadyClosed();
+        agenda.validateIsTargetGrade(member.getGrades());
+        validateAlreadyVote(memberId, agendaId);
+        validateExistAgendaItem(agendaItemIdList, idList);
     }
 
     private void validateAlreadyVote(Long memberId, Long agendaId) {
@@ -158,6 +167,21 @@ public class AgendaService {
     public void cancelVote(Long memberId, Long agendaId) {
         List<Vote> votes = voteRepository.findByMember_IdAndAgenda_Id(memberId, agendaId);
         voteRepository.deleteAllInBatch(votes);
+    }
+
+    public AgendaResponse getAgenda(Long agendaId) {
+        Agenda agenda = findAgenda(agendaId);
+
+        List<AgendaItem> agendaItems = agenda.getAgendaItems();
+        List<SelectItemDto> selectList = agendaItems.stream()
+                .map(agendaItem -> new SelectItemDto(agendaItem.getId(), agendaItem.getContent(), agendaItem.getVoteCount()))
+                .collect(Collectors.toList());
+
+        GradeType targetGradeType = agenda.getTarget();
+        int totalMember = memberGradeRepository.countByGrade_GradeType(targetGradeType);
+        int votedMember = voteRepository.countDistinctMember(agenda);
+
+        return AgendaResponse.from(agenda, votedMember, totalMember, selectList);
     }
 
     private Agenda findAgenda(Long agendaId) {

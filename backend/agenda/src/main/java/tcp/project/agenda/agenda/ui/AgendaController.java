@@ -15,6 +15,7 @@ import tcp.project.agenda.agenda.application.AgendaService;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
 import tcp.project.agenda.agenda.application.dto.VoteRequest;
 import tcp.project.agenda.agenda.ui.dto.AgendaListResponse;
+import tcp.project.agenda.agenda.ui.dto.AgendaResponse;
 import tcp.project.agenda.auth.ui.Authenticated;
 
 @RestController
@@ -51,6 +52,12 @@ public class AgendaController {
     @GetMapping("")
     public ResponseEntity<AgendaListResponse> getAgendaList(@Authenticated Long memberId, @PageableDefault Pageable pageable) {
         AgendaListResponse response = agendaService.getAgendaList(pageable);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{agendaId}")
+    public ResponseEntity<AgendaResponse> getAgenda(@Authenticated Long memberId, @PathVariable Long agendaId) {
+        AgendaResponse response = agendaService.getAgenda(agendaId);
         return ResponseEntity.ok(response);
     }
 }
