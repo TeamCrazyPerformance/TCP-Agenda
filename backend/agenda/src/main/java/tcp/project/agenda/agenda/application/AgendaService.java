@@ -184,6 +184,18 @@ public class AgendaService {
         return AgendaResponse.from(agenda, votedMember, totalMember, selectList);
     }
 
+    @Transactional
+    public void deleteAgenda(Long memberId, Long agendaId) {
+        Agenda agenda = findAgenda(agendaId);
+        agenda.validateOwner(memberId);
+
+        List<Vote> votes = voteRepository.findByAgendaId(agendaId);
+        if (!votes.isEmpty()) {
+            voteRepository.deleteAllInBatch(votes);
+        }
+        agendaRepository.delete(agenda);
+    }
+
     private Agenda findAgenda(Long agendaId) {
         return agendaRepository.findById(agendaId)
                 .orElseThrow(() -> new AgendaNotFoundException(agendaId));

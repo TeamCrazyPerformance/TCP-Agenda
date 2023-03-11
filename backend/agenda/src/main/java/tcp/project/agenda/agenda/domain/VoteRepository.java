@@ -15,4 +15,6 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
     int countDistinctMember(@Param("agenda") Agenda agenda);
 
     boolean existsByMemberIdAndAgendaId(Long memberId, Long agendaId);
+
+    List<Vote> findByAgendaId(Long agendaId);
 }
