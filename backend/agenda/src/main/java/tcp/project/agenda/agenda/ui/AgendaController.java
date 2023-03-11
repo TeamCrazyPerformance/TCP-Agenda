@@ -60,4 +60,10 @@ public class AgendaController {
         AgendaResponse response = agendaService.getAgenda(agendaId);
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/{agendaId}")
+    public ResponseEntity<Void> deleteAgenda(@Authenticated Long memberId, @PathVariable Long agendaId) {
+        agendaService.deleteAgenda(memberId, agendaId);
+        return ResponseEntity.ok().build();
+    }
 }
