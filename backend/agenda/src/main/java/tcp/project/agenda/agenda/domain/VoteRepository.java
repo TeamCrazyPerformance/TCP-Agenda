@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface VoteRepository extends JpaRepository<Vote, Long> {
-    List<Vote> findByMember_IdAndAgenda_Id(Long memberId, Long agendaId);
+    List<Vote> findByMemberIdAndAgendaId(Long memberId, Long agendaId);
 
     @Query("select count(distinct v.member) from Vote v where v.agenda = :agenda")
     int countDistinctMember(@Param("agenda") Agenda agenda);

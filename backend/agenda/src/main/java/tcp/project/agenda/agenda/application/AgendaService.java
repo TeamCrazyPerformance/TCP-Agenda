@@ -165,7 +165,7 @@ public class AgendaService {
 
     @Transactional
     public void cancelVote(Long memberId, Long agendaId) {
-        List<Vote> votes = voteRepository.findByMember_IdAndAgenda_Id(memberId, agendaId);
+        List<Vote> votes = voteRepository.findByMemberIdAndAgendaId(memberId, agendaId);
         voteRepository.deleteAllInBatch(votes);
     }
 
