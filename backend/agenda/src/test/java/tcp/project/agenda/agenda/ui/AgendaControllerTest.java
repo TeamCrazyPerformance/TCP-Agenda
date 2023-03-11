@@ -289,4 +289,43 @@ class AgendaControllerTest extends MockControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @DisplayName("안건을 삭제할 경우 200을 응답해야 함")
+    void deleteAgendaTest() throws Exception {
+        //given
+
+        //when then
+        mockMvc.perform(delete("/agenda/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("없는 안건을 삭제할 경우 400을 응답해야 함")
+    void deleteAgendaTest_agendaNotFound() throws Exception {
+        //given
+        doThrow(new AgendaNotFoundException(1L))
+                .when(agendaService)
+                .deleteAgenda(any(), any());
+
+        //when then
+        mockMvc.perform(delete("/agenda/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("안건 작성자가 아닌데 안건을 삭제할 경우 400을 응답해야 함")
+    void deleteAgendaTest_notAgendaOwner() throws Exception {
+        //given
+        doThrow(new NotAgendaOwnerException(1L, 1L))
+                .when(agendaService)
+                .deleteAgenda(any(), any());
+
+        //when then
+        mockMvc.perform(delete("/agenda/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN))
+                .andExpect(status().isBadRequest());
+    }
 }

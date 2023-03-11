@@ -359,4 +359,47 @@ class AgendaServiceTest extends ApplicationServiceTest {
         assertThatThrownBy(() -> agendaService.getAgenda(999L))
                 .isInstanceOf(AgendaNotFoundException.class);
     }
+
+    @Test
+    @DisplayName("안건과 투표 항목, 투표들이 삭제되어야 함")
+    void deleteAgendaTest() throws Exception {
+        //given
+        Long agendaId = 1L;
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+        agendaService.vote(regular.getId(), agendaId, getBasicVoteRequest());
+        agendaService.vote(executiveRegular.getId(), agendaId, getBasicVoteRequest());
+
+        //when
+        agendaService.deleteAgenda(regular.getId(), agendaId);
+
+        //then
+        List<Agenda> agendaList = agendaRepository.findAll();
+        List<AgendaItem> agendaItems = agendaItemRepository.findAll();
+        List<Vote> votes = voteRepository.findAll();
+        assertThat(votes).hasSize(0);
+        assertThat(agendaItems).hasSize(0);
+        assertThat(agendaList).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("없는 안건인 경우 예외가 발생해야 함")
+    void deleteAgendaTest_agendaNotFound() throws Exception {
+        //given
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+
+        //when
+        assertThatThrownBy(() -> agendaService.deleteAgenda(regular.getId(), 999L))
+                .isInstanceOf(AgendaNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("안건 작성자가 아닌 경우 예외가 발생해야 함")
+    void deleteAgendaTest_notAgendaOwner() throws Exception {
+        //given
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+
+        //when
+        assertThatThrownBy(() -> agendaService.deleteAgenda(general.getId(), 1L))
+                .isInstanceOf(NotAgendaOwnerException.class);
+    }
 }

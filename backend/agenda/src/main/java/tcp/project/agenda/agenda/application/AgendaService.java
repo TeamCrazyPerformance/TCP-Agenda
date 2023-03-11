@@ -165,7 +165,7 @@ public class AgendaService {
 
     @Transactional
     public void cancelVote(Long memberId, Long agendaId) {
-        List<Vote> votes = voteRepository.findByMember_IdAndAgenda_Id(memberId, agendaId);
+        List<Vote> votes = voteRepository.findByMemberIdAndAgendaId(memberId, agendaId);
         voteRepository.deleteAllInBatch(votes);
     }
 
@@ -182,6 +182,18 @@ public class AgendaService {
         int votedMember = voteRepository.countDistinctMember(agenda);
 
         return AgendaResponse.from(agenda, votedMember, totalMember, selectList);
+    }
+
+    @Transactional
+    public void deleteAgenda(Long memberId, Long agendaId) {
+        Agenda agenda = findAgenda(agendaId);
+        agenda.validateOwner(memberId);
+
+        List<Vote> votes = voteRepository.findByAgendaId(agendaId);
+        if (!votes.isEmpty()) {
+            voteRepository.deleteAllInBatch(votes);
+        }
+        agendaRepository.delete(agenda);
     }
 
     private Agenda findAgenda(Long agendaId) {
