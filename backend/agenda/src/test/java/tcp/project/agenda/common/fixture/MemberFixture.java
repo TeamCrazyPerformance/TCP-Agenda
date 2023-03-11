@@ -27,4 +27,12 @@ public class MemberFixture {
     public static Member getGeneralMember() {
         return new Member(GENERAL_NAME, GENERAL_UNIV_ID, GENERAL_PASSWORD);
     }
+
+    public static final String EXECUTIVE_GENERAL_NAME = "휴학 대표 이름";
+    public static final String EXECUTIVE_GENERAL_UNIV_ID = "16000000";
+    public static final String EXECUTIVE_GENERAL_PASSWORD = "960101";
+
+    public static Member getExecutiveGeneralMember() {
+        return new Member(EXECUTIVE_GENERAL_NAME, EXECUTIVE_GENERAL_UNIV_ID, EXECUTIVE_GENERAL_PASSWORD);
+    }
 }

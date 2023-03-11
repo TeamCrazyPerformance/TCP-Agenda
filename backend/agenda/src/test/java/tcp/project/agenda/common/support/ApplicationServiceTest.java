@@ -11,6 +11,7 @@ import tcp.project.agenda.member.domain.MemberGrade;
 import tcp.project.agenda.member.domain.MemberGradeRepository;
 import tcp.project.agenda.member.domain.MemberRepository;
 
+import static tcp.project.agenda.common.fixture.MemberFixture.getExecutiveGeneralMember;
 import static tcp.project.agenda.common.fixture.MemberFixture.getExecutiveMember;
 import static tcp.project.agenda.common.fixture.MemberFixture.getGeneralMember;
 import static tcp.project.agenda.common.fixture.MemberFixture.getRegularMember;
@@ -30,6 +31,7 @@ public class ApplicationServiceTest {
     protected Member executive;
     protected Member regular;
     protected Member general;
+    protected Member executiveRegular;
 
     protected Grade executiveGrade;
     protected Grade regularGrade;
@@ -43,9 +45,12 @@ public class ApplicationServiceTest {
         executive = memberRepository.save(getExecutiveMember());
         regular = memberRepository.save(getRegularMember());
         general = memberRepository.save(getGeneralMember());
+        executiveRegular = memberRepository.save(getExecutiveGeneralMember());
 
         memberGradeRepository.save(new MemberGrade(executive, executiveGrade));
         memberGradeRepository.save(new MemberGrade(regular, regularGrade));
         memberGradeRepository.save(new MemberGrade(general, generalGrade));
+        memberGradeRepository.save(new MemberGrade(executiveRegular, executiveGrade));
+        memberGradeRepository.save(new MemberGrade(executiveRegular, regularGrade));
     }
 }
