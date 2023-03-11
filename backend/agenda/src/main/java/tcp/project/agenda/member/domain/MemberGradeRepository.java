@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MemberGradeRepository extends JpaRepository<MemberGrade, Long> {
+    int countByGrade_GradeType(GradeType gradeType);
 }

@@ -6,6 +6,7 @@ import tcp.project.agenda.agenda.application.dto.SelectedAgendaItemDto;
 import tcp.project.agenda.agenda.application.dto.VoteRequest;
 import tcp.project.agenda.agenda.ui.dto.AgendaDto;
 import tcp.project.agenda.agenda.ui.dto.AgendaListResponse;
+import tcp.project.agenda.agenda.ui.dto.AgendaResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,5 +47,9 @@ public class AgendaFixture {
 
     public static AgendaListResponse getBasicAgendaListResponse() {
         return new AgendaListResponse(List.of(), 0, false);
+    }
+
+    public static AgendaResponse getBasicAgendaResponse() {
+        return new AgendaResponse(1L, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, BASIC_AGENDA_TARGET, 0, 30, List.of(), LocalDateTime.now(), LocalDateTime.now());
     }
 }

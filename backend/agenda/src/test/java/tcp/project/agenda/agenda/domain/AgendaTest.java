@@ -9,8 +9,12 @@ import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
 import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
 import tcp.project.agenda.agenda.exception.NotAgendaOwnerException;
+import tcp.project.agenda.agenda.exception.NotTargetMemberException;
 import tcp.project.agenda.member.domain.Grade;
+import tcp.project.agenda.member.domain.GradeType;
 import tcp.project.agenda.member.domain.Member;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -109,5 +113,29 @@ class AgendaTest {
         //when then
         assertThatThrownBy(agenda::close)
                 .isInstanceOf(AgendaAlreadyClosedException.class);
+    }
+
+    @Test
+    @DisplayName("투표 대상 등급이 포함된 경우 아무 일도 일어나지 않음")
+    void validateIsTargetGradeTest() throws Exception {
+        //given
+        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, new Grade(GradeType.REGULAR), BASIC_AGENDA_CLOSED_AT);
+        List<Grade> grades = List.of(new Grade(GradeType.REGULAR), new Grade(GradeType.EXECUTIVE));
+
+        //when then
+        assertThatNoException()
+                .isThrownBy(() -> agenda.validateIsTargetGrade(grades));
+    }
+
+    @Test
+    @DisplayName("투표 대상이 아닌 경우 예외가 발생해야 함")
+    void validateIsTargetGradeTest_alreadyClosedException() throws Exception {
+        //given
+        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, new Grade(GradeType.REGULAR), BASIC_AGENDA_CLOSED_AT);
+        List<Grade> grades = List.of(new Grade(GradeType.GENERAL), new Grade(GradeType.EXECUTIVE));
+
+        //when then
+        assertThatThrownBy(() -> agenda.validateIsTargetGrade(grades))
+                .isInstanceOf(NotTargetMemberException.class);
     }
 }

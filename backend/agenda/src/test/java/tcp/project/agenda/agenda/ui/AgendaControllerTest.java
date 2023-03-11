@@ -9,9 +9,12 @@ import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
 import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
 import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
 import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
+import tcp.project.agenda.agenda.exception.AlreadyVoteException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
 import tcp.project.agenda.agenda.exception.NotAgendaOwnerException;
+import tcp.project.agenda.agenda.exception.NotTargetMemberException;
 import tcp.project.agenda.agenda.ui.dto.AgendaListResponse;
+import tcp.project.agenda.agenda.ui.dto.AgendaResponse;
 import tcp.project.agenda.common.support.MockControllerTest;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -25,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaListResponse;
+import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaResponse;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AuthFixture.ACCESS_TOKEN;
@@ -185,6 +189,38 @@ class AgendaControllerTest extends MockControllerTest {
     }
 
     @Test
+    @DisplayName("이미 투표한 안건인 경우 400을 응답해야 함")
+    void voteTest_alreadyVote() throws Exception {
+        //given
+        doThrow(new AlreadyVoteException(1L))
+                .when(agendaService)
+                .vote(any(), any(), any());
+
+        //when then
+        mockMvc.perform(post("/agenda/1/vote")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(getBasicVoteRequest())))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("투표 대상이 아닌 안건인 경우 400을 응답해야 함")
+    void voteTest_notTarget() throws Exception {
+        //given
+        doThrow(new NotTargetMemberException())
+                .when(agendaService)
+                .vote(any(), any(), any());
+
+        //when then
+        mockMvc.perform(post("/agenda/1/vote")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(getBasicVoteRequest())))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     @DisplayName("없는 투표 항목인 경우 400을 응답해야 함")
     void voteTest_agendaItemNotFound() throws Exception {
         //given
@@ -224,5 +260,33 @@ class AgendaControllerTest extends MockControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(response)));
+    }
+
+    @Test
+    @DisplayName("안건 하나를 조회하면 올바른 데이터와 200을 응답해야 함")
+    void getAgendaTest() throws Exception {
+        //given
+        AgendaResponse response = getBasicAgendaResponse();
+        given(agendaService.getAgenda(any()))
+                .willReturn(response);
+
+        //when then
+        mockMvc.perform(get("/agenda/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN))
+                .andExpect(status().isOk())
+                .andExpect(content().json(mapper.writeValueAsString(response)));
+    }
+
+    @Test
+    @DisplayName("없는 안건을 조회할 경우 400을 응답해야 함")
+    void getAgendaTest_agendaNotFound() throws Exception {
+        //given
+        given(agendaService.getAgenda(any()))
+                .willThrow(new AgendaNotFoundException(1L));
+
+        //when then
+        mockMvc.perform(get("/agenda/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN))
+                .andExpect(status().isBadRequest());
     }
 }

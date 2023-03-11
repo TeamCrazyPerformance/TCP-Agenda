@@ -9,6 +9,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Entity
@@ -25,6 +29,9 @@ public class Member extends BaseEntity {
 
     private String password;
 
+    @OneToMany(mappedBy = "member")
+    private final List<MemberGrade> grades = new ArrayList<>();
+
     public Member(String name, String univId, String password) {
         this.name = name;
         this.univId = univId;
@@ -33,5 +40,11 @@ public class Member extends BaseEntity {
 
     public boolean validatePassword(String password) {
         return this.password.equals(password);
+    }
+
+    public List<Grade> getGrades() {
+        return grades.stream()
+                .map(MemberGrade::getGrade)
+                .collect(Collectors.toList());
     }
 }

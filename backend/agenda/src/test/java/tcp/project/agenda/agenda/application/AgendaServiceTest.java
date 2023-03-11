@@ -15,10 +15,14 @@ import tcp.project.agenda.agenda.domain.VoteRepository;
 import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
 import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
 import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
+import tcp.project.agenda.agenda.exception.AlreadyVoteException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
 import tcp.project.agenda.agenda.exception.NotAgendaOwnerException;
+import tcp.project.agenda.agenda.exception.NotTargetMemberException;
 import tcp.project.agenda.agenda.ui.dto.AgendaDto;
 import tcp.project.agenda.agenda.ui.dto.AgendaListResponse;
+import tcp.project.agenda.agenda.ui.dto.AgendaResponse;
+import tcp.project.agenda.agenda.ui.dto.SelectItemDto;
 import tcp.project.agenda.auth.exception.MemberNotFoundException;
 import tcp.project.agenda.common.exception.ValidationException;
 import tcp.project.agenda.common.support.ApplicationServiceTest;
@@ -27,6 +31,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_ITEM1;
+import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_ITEM2;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidAgendaCreateRequest;
@@ -143,7 +150,7 @@ class AgendaServiceTest extends ApplicationServiceTest {
         agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
 
         //when
-        agendaService.vote(general.getId(), 1L, getBasicVoteRequest());
+        agendaService.vote(regular.getId(), 1L, getBasicVoteRequest());
 
         //then
         List<Vote> voteList = voteRepository.findAll();
@@ -156,7 +163,7 @@ class AgendaServiceTest extends ApplicationServiceTest {
         //given
 
         //when then
-        assertThatThrownBy(() -> agendaService.vote(general.getId(), 1L, getInvalidVoteRequest()))
+        assertThatThrownBy(() -> agendaService.vote(regular.getId(), 1L, getInvalidVoteRequest()))
                 .isInstanceOf(ValidationException.class);
     }
 
@@ -169,8 +176,8 @@ class AgendaServiceTest extends ApplicationServiceTest {
 
 
         //when then
-        assertThatThrownBy(() -> agendaService.vote(general.getId(), notExistAgendaId, getBasicVoteRequest()))
-            .isInstanceOf(AgendaNotFoundException.class);
+        assertThatThrownBy(() -> agendaService.vote(regular.getId(), notExistAgendaId, getBasicVoteRequest()))
+                .isInstanceOf(AgendaNotFoundException.class);
     }
 
     @Test
@@ -193,7 +200,7 @@ class AgendaServiceTest extends ApplicationServiceTest {
         agendaService.closeAgenda(regular.getId(), 1L);
 
         //when then
-        assertThatThrownBy(() -> agendaService.vote(general.getId(), 1L, getBasicVoteRequest()))
+        assertThatThrownBy(() -> agendaService.vote(regular.getId(), 1L, getBasicVoteRequest()))
                 .isInstanceOf(AgendaAlreadyClosedException.class);
     }
 
@@ -204,8 +211,31 @@ class AgendaServiceTest extends ApplicationServiceTest {
         agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
 
         //when then
-        assertThatThrownBy(() -> agendaService.vote(general.getId(), 1L, getNotExistSelectItemVoteRequest()))
+        assertThatThrownBy(() -> agendaService.vote(regular.getId(), 1L, getNotExistSelectItemVoteRequest()))
                 .isInstanceOf(AgendaItemNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("대상이 아닌 안건에 투표할 경우 예외가 발생해야 함")
+    void voteTest_NotTargetMember() throws Exception {
+        //given
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+
+        //when then
+        assertThatThrownBy(() -> agendaService.vote(general.getId(), 1L, getNotExistSelectItemVoteRequest()))
+                .isInstanceOf(NotTargetMemberException.class);
+    }
+
+    @Test
+    @DisplayName("이미 투표한 안건에 또 투표를 하면 예외가 발생해야 함")
+    void voteTest_alreadyVote() throws Exception {
+        //given
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+        agendaService.vote(regular.getId(), 1L, getBasicVoteRequest());
+
+        //when then
+        assertThatThrownBy(() -> agendaService.vote(regular.getId(), 1L, getBasicVoteRequest()))
+                .isInstanceOf(AlreadyVoteException.class);
     }
 
     @Test
@@ -213,10 +243,10 @@ class AgendaServiceTest extends ApplicationServiceTest {
     void voteCancelTest() throws Exception {
         //given
         agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
-        agendaService.vote(general.getId(), 1L, getBasicVoteRequest());
+        agendaService.vote(regular.getId(), 1L, getBasicVoteRequest());
 
         //when
-        agendaService.cancelVote(general.getId(), 1L);
+        agendaService.cancelVote(regular.getId(), 1L);
 
         //then
         List<Vote> votes = voteRepository.findAll();
@@ -235,10 +265,13 @@ class AgendaServiceTest extends ApplicationServiceTest {
 
         //then
         List<AgendaDto> agendaList = response.getAgendaList();
-        assertThat(response.getPageNumber()).isEqualTo(0);
-        assertThat(response.isHasNext()).isFalse();
-        assertThat(agendaList).hasSize(1);
-        assertThat(agendaList.get(0).getVotedMember()).isEqualTo(0);
+        assertAll(
+                () -> assertThat(response.getPageNumber()).isEqualTo(0),
+                () -> assertThat(response.isHasNext()).isFalse(),
+                () -> assertThat(agendaList).hasSize(1),
+                () -> assertThat(agendaList.get(0).getVotedMember()).isEqualTo(0)
+
+        );
     }
 
     @Test
@@ -248,18 +281,19 @@ class AgendaServiceTest extends ApplicationServiceTest {
         Pageable pageable = PageRequest.of(0, 10);
         agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
         agendaService.vote(regular.getId(), 1L, getBasicVoteRequest());
-        agendaService.vote(general.getId(), 1L, getBasicVoteRequest());
-        agendaService.vote(executive.getId(), 1L, getBasicVoteRequest());
+        agendaService.vote(executiveRegular.getId(), 1L, getBasicVoteRequest());
 
         //when
         AgendaListResponse response = agendaService.getAgendaList(pageable);
 
         //then
         List<AgendaDto> agendaList = response.getAgendaList();
-        assertThat(response.getPageNumber()).isEqualTo(0);
-        assertThat(response.isHasNext()).isFalse();
-        assertThat(agendaList).hasSize(1);
-        assertThat(agendaList.get(0).getVotedMember()).isEqualTo(3);
+        assertAll(
+                () -> assertThat(response.getPageNumber()).isEqualTo(0),
+                () -> assertThat(response.isHasNext()).isFalse(),
+                () -> assertThat(agendaList).hasSize(1),
+                () -> assertThat(agendaList.get(0).getVotedMember()).isEqualTo(2)
+        );
     }
 
     @Test
@@ -276,9 +310,53 @@ class AgendaServiceTest extends ApplicationServiceTest {
 
         //then
         List<AgendaDto> agendaList = response.getAgendaList();
-        assertThat(response.getPageNumber()).isEqualTo(0);
-        assertThat(response.isHasNext()).isTrue();
-        assertThat(agendaList).hasSize(10);
-        assertThat(agendaList.get(0).getVotedMember()).isEqualTo(0);
+        assertAll(
+                () -> assertThat(response.getPageNumber()).isEqualTo(0),
+                () -> assertThat(response.isHasNext()).isTrue(),
+                () -> assertThat(agendaList).hasSize(10),
+                () -> assertThat(agendaList.get(0).getVotedMember()).isEqualTo(0)
+        );
+    }
+
+    @Test
+    @DisplayName("안건 하나의 데이터를 가져와야 함")
+    void getAgendaTest() throws Exception {
+        //given
+        Long agendaId = 1L;
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+        agendaService.vote(regular.getId(), agendaId, getBasicVoteRequest());
+        agendaService.vote(executiveRegular.getId(), agendaId, getBasicVoteRequest());
+
+        //when
+        AgendaResponse response = agendaService.getAgenda(agendaId);
+
+        //then
+        Agenda agenda = agendaRepository.findAll().get(0);
+        List<SelectItemDto> selectList = response.getSelectList();
+        assertAll(
+                () -> assertThat(response.getTitle()).isEqualTo(agenda.getTitle()),
+                () -> assertThat(response.getContent()).isEqualTo(agenda.getContent()),
+                () -> assertThat(response.getTarget()).isEqualTo(agenda.getTarget().getCode()),
+                () -> assertThat(response.getCreatedAt()).isEqualTo(agenda.getCreatedDate()),
+                () -> assertThat(response.getClosedAt()).isEqualTo(agenda.getClosedAt()),
+                () -> assertThat(response.getVotedMember()).isEqualTo(2),
+                () -> assertThat(response.getVotedMember()).isEqualTo(2),
+                () -> assertThat(selectList.get(0).getId()).isEqualTo(1),
+                () -> assertThat(selectList.get(0).getContent()).isEqualTo(BASIC_AGENDA_ITEM1),
+                () -> assertThat(selectList.get(0).getVoteCount()).isEqualTo(2),
+                () -> assertThat(selectList.get(1).getId()).isEqualTo(2),
+                () -> assertThat(selectList.get(1).getContent()).isEqualTo(BASIC_AGENDA_ITEM2),
+                () -> assertThat(selectList.get(1).getVoteCount()).isEqualTo(2)
+        );
+    }
+
+    @Test
+    @DisplayName("안건이 없는 경우 예외가 발생해야 함")
+    void getAgendaTest_agendaNotFound() throws Exception {
+        //given
+
+        //when then
+        assertThatThrownBy(() -> agendaService.getAgenda(999L))
+                .isInstanceOf(AgendaNotFoundException.class);
     }
 }

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
 import tcp.project.agenda.agenda.exception.NotAgendaOwnerException;
+import tcp.project.agenda.agenda.exception.NotTargetMemberException;
 import tcp.project.agenda.common.entity.BaseEntity;
 import tcp.project.agenda.member.domain.Grade;
 import tcp.project.agenda.member.domain.GradeType;
@@ -101,5 +102,12 @@ public class Agenda extends BaseEntity {
 
     public GradeType getTarget() {
         return target.getGradeType();
+    }
+
+    public void validateIsTargetGrade(List<Grade> grades) {
+        grades.stream()
+                .filter(grade -> this.target.getGradeType().equals(grade.getGradeType()))
+                .findAny()
+                .orElseThrow(NotTargetMemberException::new);
     }
 }
