@@ -104,6 +104,7 @@ public class AgendaService {
         Agenda agenda = findAgenda(agendaId);
         Member member = findMember(memberId);
         agenda.validateAlreadyClosed();
+        agenda.validateIsTargetGrade(member.getGrades());
 
         List<Long> agendaItemIdList = getAgendaItemIdList(agenda);
 
