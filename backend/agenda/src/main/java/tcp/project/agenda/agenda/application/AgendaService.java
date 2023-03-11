@@ -109,7 +109,7 @@ public class AgendaService {
         Agenda agenda = findAgenda(agendaId);
         Member member = findMember(memberId);
 
-        List<Long> selectItemIdList = getIdList(request);
+        List<Long> selectItemIdList = getSelectItemIdList(request);
         List<Long> agendaItemIdList = getAgendaItemIdList(agenda);
 
         validateVote(agenda, member, selectItemIdList, agendaItemIdList);
@@ -119,6 +119,27 @@ public class AgendaService {
                 .map(agendaItem -> Vote.createVote(member, agendaItem, agenda))
                 .forEach(voteRepository::save);
     }
+
+    private void validateVoteRequest(VoteRequest request) {
+        VoteValidator validator = new VoteValidator();
+        List<ValidationError> errors = validator.validate(request);
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
+    }
+
+    private List<Long> getSelectItemIdList(VoteRequest request) {
+        return request.getSelectList().stream()
+                .map(SelectedAgendaItemDto::getId)
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> getAgendaItemIdList(Agenda agenda) {
+        return agenda.getAgendaItems().stream()
+                .map(AgendaItem::getId)
+                .collect(Collectors.toList());
+    }
+
 
     private void validateVote(Agenda agenda, Member member, List<Long> selectItemIdList, List<Long> agendaItemIdList) {
         agenda.validateAlreadyClosed();
@@ -133,20 +154,6 @@ public class AgendaService {
         }
     }
 
-    private void validateVoteRequest(VoteRequest request) {
-        VoteValidator validator = new VoteValidator();
-        List<ValidationError> errors = validator.validate(request);
-        if (!errors.isEmpty()) {
-            throw new ValidationException(errors);
-        }
-    }
-
-    private List<Long> getAgendaItemIdList(Agenda agenda) {
-        return agenda.getAgendaItems().stream()
-                .map(AgendaItem::getId)
-                .collect(Collectors.toList());
-    }
-
     private void validateExistAgendaItem(List<Long> agendaItemIdList, List<Long> selectItemIdList) {
         selectItemIdList.stream()
                 .filter(voteId -> !agendaItemIdList.contains(voteId))
@@ -154,12 +161,6 @@ public class AgendaService {
                 .ifPresent(voteId -> {
                     throw new AgendaItemNotFoundException(voteId);
                 });
-    }
-
-    private List<Long> getIdList(VoteRequest request) {
-        return request.getSelectList().stream()
-                .map(SelectedAgendaItemDto::getId)
-                .collect(Collectors.toList());
     }
 
     @Transactional
