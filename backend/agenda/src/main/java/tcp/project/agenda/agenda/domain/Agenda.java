@@ -15,13 +15,14 @@ import tcp.project.agenda.member.domain.Member;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -46,9 +47,8 @@ public class Agenda extends BaseEntity {
 
     private String content;
 
-    @OneToOne
-    @JoinColumn(name = "target_grade_id")
-    private Grade target;
+    @Enumerated(EnumType.STRING)
+    private GradeType target;
 
     private LocalDateTime closedAt;
 
@@ -59,6 +59,7 @@ public class Agenda extends BaseEntity {
     private List<AgendaItem> agendaItems = new ArrayList<>();
 
     public Agenda(Member member, String title, String content, Grade target, LocalDateTime closedAt) {
+    public Agenda(Member member, String title, String content, GradeType target, LocalDateTime closedAt) {
         this.member = member;
         this.title = title;
         this.content = content;
@@ -67,7 +68,7 @@ public class Agenda extends BaseEntity {
         this.closed = false;
     }
 
-    public static Agenda createAgendaFrom(Member member, String title, String content, Grade target, LocalDateTime closedAt) {
+    public static Agenda createAgendaFrom(Member member, String title, String content, GradeType target, LocalDateTime closedAt) {
         validateClosedAt(closedAt);
         content = Optional.ofNullable(content).orElse("");
         return new Agenda(member, title, content, target, closedAt);
@@ -106,7 +107,7 @@ public class Agenda extends BaseEntity {
 
     public void validateIsTargetGrade(List<Grade> grades) {
         grades.stream()
-                .filter(grade -> this.target.getGradeType().equals(grade.getGradeType()))
+                .filter(grade -> this.target.equals(grade.getGradeType()))
                 .findAny()
                 .orElseThrow(NotTargetMemberException::new);
     }

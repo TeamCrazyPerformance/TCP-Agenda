@@ -43,7 +43,7 @@ class AgendaTest {
         AgendaCreateRequest request = getBasicAgendaCreateRequest();
 
         //when
-        Agenda agenda = Agenda.createAgendaFrom(member, request.getTitle(), null, grade, request.getClosedAt());
+        Agenda agenda = Agenda.createAgendaFrom(member, request.getTitle(), null, grade.getGradeType(), request.getClosedAt());
 
         //then
         assertAll(
@@ -60,7 +60,7 @@ class AgendaTest {
         AgendaCreateRequest request = getInvalidClosedAtAgendaCreateRequest();
 
         //when then
-        assertThatThrownBy(() -> Agenda.createAgendaFrom(member, request.getTitle(), request.getContent(), grade, request.getClosedAt()))
+        assertThatThrownBy(() -> Agenda.createAgendaFrom(member, request.getTitle(), request.getContent(), grade.getGradeType(), request.getClosedAt()))
                 .isInstanceOf(InvalidClosedAgendaTimeException.class);
     }
 
@@ -68,7 +68,7 @@ class AgendaTest {
     @DisplayName("안건 작성자일 경우 예외가 발생하면 안 됨")
     void validateAgendaOwner() throws Exception {
         //given
-        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, grade, BASIC_AGENDA_CLOSED_AT);
+        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, grade.getGradeType(), BASIC_AGENDA_CLOSED_AT);
         Long memberId = 1L;
         given(member.getId()).willReturn(memberId);
 
@@ -81,7 +81,7 @@ class AgendaTest {
     @DisplayName("안건 작성자가 아닐 경우 예외가 발생해야 함")
     void validateAgendaOwner_exception() throws Exception {
         //given
-        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, grade, BASIC_AGENDA_CLOSED_AT);
+        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, grade.getGradeType(), BASIC_AGENDA_CLOSED_AT);
         given(member.getId()).willReturn(1L);
         Long notMemberId = 999L;
 
@@ -94,7 +94,7 @@ class AgendaTest {
     @DisplayName("안건이 마감 되어야 함")
     void closeTest() throws Exception {
         //given
-        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, grade, BASIC_AGENDA_CLOSED_AT);
+        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, grade.getGradeType(), BASIC_AGENDA_CLOSED_AT);
 
         //when
         agenda.close();
@@ -107,7 +107,7 @@ class AgendaTest {
     @DisplayName("이미 마감이 된 안건인 경우 예외가 발생해야 함")
     void closeTest_alreadyClosedException() throws Exception {
         //given
-        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, grade, BASIC_AGENDA_CLOSED_AT);
+        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, grade.getGradeType(), BASIC_AGENDA_CLOSED_AT);
         agenda.close();
 
         //when then
@@ -119,7 +119,7 @@ class AgendaTest {
     @DisplayName("투표 대상 등급이 포함된 경우 아무 일도 일어나지 않음")
     void validateIsTargetGradeTest() throws Exception {
         //given
-        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, new Grade(GradeType.REGULAR), BASIC_AGENDA_CLOSED_AT);
+        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, GradeType.REGULAR, BASIC_AGENDA_CLOSED_AT);
         List<Grade> grades = List.of(new Grade(GradeType.REGULAR), new Grade(GradeType.EXECUTIVE));
 
         //when then
@@ -131,7 +131,7 @@ class AgendaTest {
     @DisplayName("투표 대상이 아닌 경우 예외가 발생해야 함")
     void validateIsTargetGradeTest_alreadyClosedException() throws Exception {
         //given
-        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, new Grade(GradeType.REGULAR), BASIC_AGENDA_CLOSED_AT);
+        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, GradeType.REGULAR, BASIC_AGENDA_CLOSED_AT);
         List<Grade> grades = List.of(new Grade(GradeType.GENERAL), new Grade(GradeType.EXECUTIVE));
 
         //when then

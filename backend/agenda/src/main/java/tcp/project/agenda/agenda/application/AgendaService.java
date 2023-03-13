@@ -53,9 +53,8 @@ public class AgendaService {
     public void createAgenda(Long memberId, AgendaCreateRequest request) {
         validateAgendaCreateRequest(request);
         Member member = findMember(memberId);
-        Grade target = findGrade(request);
 
-        Agenda agenda = Agenda.createAgendaFrom(member, request.getTitle(), request.getContent(), target, request.getClosedAt());
+        Agenda agenda = Agenda.createAgendaFrom(member, request.getTitle(), request.getContent(), GradeType.from(request.getTarget()), request.getClosedAt());
         List<AgendaItem> agendaItems = getAgendaItems(request, agenda);
         agenda.addAgendaItems(agendaItems);
 
