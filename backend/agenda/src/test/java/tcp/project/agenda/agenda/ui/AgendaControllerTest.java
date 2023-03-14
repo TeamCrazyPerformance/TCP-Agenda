@@ -6,17 +6,27 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
+import tcp.project.agenda.agenda.application.dto.AgendaUpdateRequest;
+import tcp.project.agenda.agenda.domain.Agenda;
+import tcp.project.agenda.agenda.domain.AgendaItem;
 import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
 import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
 import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
 import tcp.project.agenda.agenda.exception.AlreadyVoteException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
+import tcp.project.agenda.agenda.exception.InvalidUpdateAlreadyVoteStartedAgendaException;
 import tcp.project.agenda.agenda.exception.NotAgendaOwnerException;
 import tcp.project.agenda.agenda.exception.NotTargetMemberException;
 import tcp.project.agenda.agenda.ui.dto.AgendaListResponse;
 import tcp.project.agenda.agenda.ui.dto.AgendaResponse;
 import tcp.project.agenda.common.support.MockControllerTest;
+import tcp.project.agenda.member.domain.GradeType;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
@@ -24,13 +34,18 @@ import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CONTENT;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaListResponse;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaResponse;
+import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicNotVoteStartedAgendaUpdateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteRequest;
+import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteStartedAgendaUpdateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaCreateRequest;
+import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaUpdateRequest;
 import static tcp.project.agenda.common.fixture.AuthFixture.ACCESS_TOKEN;
 
 class AgendaControllerTest extends MockControllerTest {
@@ -326,6 +341,119 @@ class AgendaControllerTest extends MockControllerTest {
         //when then
         mockMvc.perform(delete("/agenda/1")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("아직 투표가 시작되지 않은 안건일 경우, '제목, 내용, 마감 시간, 대상, 투표 항목'이 바뀔 수 있음")
+    void updateAgendaTest_voteNotStarted() throws Exception {
+        //given
+        AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
+
+        //when then
+        mockMvc.perform(put("/agenda/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("안건이 없을 경우 경우 예외가 발생해야 함")
+    void updateTest_agendaNotFound() throws Exception {
+        //given
+        AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
+        doThrow(new AgendaNotFoundException(1L))
+                .when(agendaService)
+                .updateAgenda(any(), any(), any());
+
+        //when then
+        mockMvc.perform(put("/agenda/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("안건 작성자가 아닐 경우 경우 예외가 발생해야 함")
+    void updateTest_notAgendaOwner() throws Exception {
+        //given
+        AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
+        doThrow(new NotAgendaOwnerException(1L, 1L))
+                .when(agendaService)
+                .updateAgenda(any(), any(), any());
+
+        //when then
+        mockMvc.perform(put("/agenda/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("마감 시간이 시작 시간보다 빠른 경우 예외가 발생해야 함")
+    void updateTest_invalidClosedAt() throws Exception {
+        //given
+        AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
+        doThrow(new InvalidClosedAgendaTimeException())
+                .when(agendaService)
+                .updateAgenda(any(), any(), any());
+
+        //when then
+        mockMvc.perform(put("/agenda/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("이미 종료된 안건인 경우 예외가 발생해야 함")
+    void updateTest_alreadyClosed() throws Exception {
+        //given
+        AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
+        doThrow(new AgendaAlreadyClosedException())
+                .when(agendaService)
+                .updateAgenda(any(), any(), any());
+
+        //when then
+        mockMvc.perform(put("/agenda/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("투표가 시작된 안건일 경우, '제목, 마감 시간'이 바뀔 수 있음")
+    void updateTest_voteStarted() throws Exception {
+        //given
+        AgendaUpdateRequest request = getBasicVoteStartedAgendaUpdateRequest();
+
+        //when then
+        mockMvc.perform(put("/agenda/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("이미 투표가 시작된 안건인 경우에 내용, 대상, 투표 항목을 수정하려고 하면 예외가 발생해야 함")
+    void updateTest_invalidUpdateAlreadyStartedVoteAgenda() throws Exception {
+        //given
+        AgendaUpdateRequest request = getBasicVoteStartedAgendaUpdateRequest();
+        doThrow(new InvalidUpdateAlreadyVoteStartedAgendaException())
+                .when(agendaService)
+                .updateAgenda(any(), any(), any());
+
+        //when then
+        mockMvc.perform(put("/agenda/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
     }
 }
