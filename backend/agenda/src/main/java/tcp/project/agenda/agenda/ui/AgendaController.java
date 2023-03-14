@@ -8,11 +8,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tcp.project.agenda.agenda.application.AgendaService;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
+import tcp.project.agenda.agenda.application.dto.AgendaUpdateRequest;
 import tcp.project.agenda.agenda.application.dto.VoteRequest;
 import tcp.project.agenda.agenda.ui.dto.AgendaListResponse;
 import tcp.project.agenda.agenda.ui.dto.AgendaResponse;
@@ -64,6 +66,12 @@ public class AgendaController {
     @DeleteMapping("/{agendaId}")
     public ResponseEntity<Void> deleteAgenda(@Authenticated Long memberId, @PathVariable Long agendaId) {
         agendaService.deleteAgenda(memberId, agendaId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{agendaId}")
+    public ResponseEntity<Void> updateAgenda(@Authenticated Long memberId, @PathVariable Long agendaId, @RequestBody AgendaUpdateRequest request) {
+        agendaService.updateAgenda(memberId, agendaId, request);
         return ResponseEntity.ok().build();
     }
 }
