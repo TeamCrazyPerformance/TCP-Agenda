@@ -57,12 +57,14 @@ public class Agenda extends BaseEntity {
     private boolean closed;
 
     @OneToMany(mappedBy = "agenda", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AgendaItem> agendaItems = new ArrayList<>();
+    private final List<AgendaItem> agendaItems = new ArrayList<>();
 
     @OneToMany(mappedBy = "agenda")
-    private List<Vote> votes = new ArrayList<>();
+    private final List<Vote> votes = new ArrayList<>();
 
     public Agenda(Member member, String title, String content, GradeType target, LocalDateTime closedAt) {
+        validateClosedAt(closedAt);
+        content = Optional.ofNullable(content).orElse("");
         this.member = member;
         this.title = title;
         this.content = content;
@@ -72,9 +74,6 @@ public class Agenda extends BaseEntity {
     }
 
     public static Agenda createAgendaFrom(Member member, String title, String content, GradeType target, LocalDateTime closedAt) {
-        //TODO 검증 위치 생성자로 옮기기
-        validateClosedAt(closedAt);
-        content = Optional.ofNullable(content).orElse("");
         return new Agenda(member, title, content, target, closedAt);
     }
 
