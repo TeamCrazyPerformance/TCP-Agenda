@@ -17,6 +17,7 @@ import tcp.project.agenda.member.domain.GradeType;
 import tcp.project.agenda.member.domain.Member;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -26,6 +27,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CLOSED_AT;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CONTENT;
+import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_SELECTED_LIST_DTO;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_TITLE;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicNotVoteStartedAgendaUpdateRequest;
@@ -205,6 +207,9 @@ class AgendaTest {
     void updateTest_voteStarted() throws Exception {
         //given
         Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, GradeType.REGULAR, BASIC_AGENDA_CLOSED_AT);
+        List<AgendaItem> agendaItemList = BASIC_AGENDA_SELECTED_LIST_DTO.stream().map(agendaItemDto -> new AgendaItem(agenda, agendaItemDto.getContent())).collect(Collectors.toList());
+        agenda.addAgendaItems(agendaItemList);
+        agenda.addVote(mock(Vote.class));
         AgendaUpdateRequest request = getBasicVoteStartedAgendaUpdateRequest();
         List<AgendaItem> agendaItems = request.getSelectList().stream()
                 .map(agendaItemDto -> AgendaItem.createAgendaItem(agenda, agendaItemDto.getContent()))
@@ -229,8 +234,9 @@ class AgendaTest {
     void updateTest_invalidUpdateAlreadyStartedVoteAgenda() throws Exception {
         //given
         Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, GradeType.REGULAR, BASIC_AGENDA_CLOSED_AT);
-        Vote vote = mock(Vote.class);
-        agenda.addVote(vote);
+        List<AgendaItem> agendaItemList = BASIC_AGENDA_SELECTED_LIST_DTO.stream().map(agendaItemDto -> new AgendaItem(agenda, agendaItemDto.getContent())).collect(Collectors.toList());
+        agenda.addAgendaItems(agendaItemList);
+        agenda.addVote(mock(Vote.class));
         AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
         List<AgendaItem> agendaItems = request.getSelectList().stream()
                 .map(agendaItemDto -> AgendaItem.createAgendaItem(agenda, agendaItemDto.getContent()))

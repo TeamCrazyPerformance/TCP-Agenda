@@ -116,24 +116,25 @@ public class Agenda extends BaseEntity {
         validateAlreadyClosed();
         validateClosedAt(closedAt);
         if (isVoteStarted()) {
-            validateUpdatingAlreadyStartedVote(content, closedAt, target, agendaItems);
-            agendaItems = this.agendaItems;
+            validateUpdatingAlreadyStartedVote(content, target, agendaItems);
+            agendaItems = List.copyOf(this.agendaItems);
         }
         this.title = title;
         this.content = content;
         this.closedAt = closedAt;
         this.target = GradeType.from(target);
-        this.agendaItems = agendaItems;
+        this.agendaItems.clear();
+        this.agendaItems.addAll(agendaItems);
     }
 
-    private void validateUpdatingAlreadyStartedVote(String content, LocalDateTime closedAt, String target, List<AgendaItem> agendaItems) {
-        if (!(isAgendaItemsNotChanged(agendaItems) && isAgendaInfoNotChanged(content, closedAt, target))) {
+    private void validateUpdatingAlreadyStartedVote(String content, String target, List<AgendaItem> agendaItems) {
+        if (!(isAgendaItemsNotChanged(agendaItems) && isAgendaInfoNotChanged(content, target))) {
             throw new InvalidUpdateAlreadyVoteStartedAgendaException();
         }
     }
 
-    private boolean isAgendaInfoNotChanged(String content, LocalDateTime closedAt, String target) {
-        return this.content.equals(content) && this.closedAt.equals(closedAt) && this.target.equals(GradeType.from(target));
+    private boolean isAgendaInfoNotChanged(String content, String target) {
+        return this.content.equals(content) && this.target.equals(GradeType.from(target));
     }
 
     private boolean isAgendaItemsNotChanged(List<AgendaItem> agendaItems) {
