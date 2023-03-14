@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
+import tcp.project.agenda.agenda.exception.InvalidUpdateAlreadyVoteStartedAgendaException;
 import tcp.project.agenda.agenda.exception.NotAgendaOwnerException;
 import tcp.project.agenda.agenda.exception.NotTargetMemberException;
 import tcp.project.agenda.common.entity.BaseEntity;
@@ -15,13 +16,14 @@ import tcp.project.agenda.member.domain.Member;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -46,19 +48,23 @@ public class Agenda extends BaseEntity {
 
     private String content;
 
-    @OneToOne
-    @JoinColumn(name = "target_grade_id")
-    private Grade target;
+    @Enumerated(EnumType.STRING)
+    private GradeType target;
 
     private LocalDateTime closedAt;
 
     @Column(name = "is_closed")
     private boolean closed;
 
-    @OneToMany(mappedBy = "agenda", cascade = CascadeType.ALL)
-    private List<AgendaItem> agendaItems = new ArrayList<>();
+    @OneToMany(mappedBy = "agenda", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<AgendaItem> agendaItems = new ArrayList<>();
 
-    public Agenda(Member member, String title, String content, Grade target, LocalDateTime closedAt) {
+    @OneToMany(mappedBy = "agenda")
+    private final List<Vote> votes = new ArrayList<>();
+
+    public Agenda(Member member, String title, String content, GradeType target, LocalDateTime closedAt) {
+        validateClosedAt(closedAt);
+        content = Optional.ofNullable(content).orElse("");
         this.member = member;
         this.title = title;
         this.content = content;
@@ -67,9 +73,7 @@ public class Agenda extends BaseEntity {
         this.closed = false;
     }
 
-    public static Agenda createAgendaFrom(Member member, String title, String content, Grade target, LocalDateTime closedAt) {
-        validateClosedAt(closedAt);
-        content = Optional.ofNullable(content).orElse("");
+    public static Agenda createAgendaFrom(Member member, String title, String content, GradeType target, LocalDateTime closedAt) {
         return new Agenda(member, title, content, target, closedAt);
     }
 
@@ -100,14 +104,52 @@ public class Agenda extends BaseEntity {
         }
     }
 
-    public GradeType getTarget() {
-        return target.getGradeType();
-    }
-
     public void validateIsTargetGrade(List<Grade> grades) {
         grades.stream()
-                .filter(grade -> this.target.getGradeType().equals(grade.getGradeType()))
+                .filter(grade -> this.target.equals(grade.getGradeType()))
                 .findAny()
                 .orElseThrow(NotTargetMemberException::new);
+    }
+
+    public void update(String title, String content, LocalDateTime closedAt, String target, List<AgendaItem> agendaItems) {
+        validateAlreadyClosed();
+        validateClosedAt(closedAt);
+        if (isVoteStarted()) {
+            validateUpdatingAlreadyStartedVote(content, target, agendaItems);
+            agendaItems = List.copyOf(this.agendaItems);
+        }
+        this.title = title;
+        this.content = content;
+        this.closedAt = closedAt;
+        this.target = GradeType.from(target);
+        this.agendaItems.clear();
+        this.agendaItems.addAll(agendaItems);
+    }
+
+    private void validateUpdatingAlreadyStartedVote(String content, String target, List<AgendaItem> agendaItems) {
+        if (!(isAgendaItemsNotChanged(agendaItems) && isAgendaInfoNotChanged(content, target))) {
+            throw new InvalidUpdateAlreadyVoteStartedAgendaException();
+        }
+    }
+
+    private boolean isAgendaInfoNotChanged(String content, String target) {
+        return this.content.equals(content) && this.target.equals(GradeType.from(target));
+    }
+
+    private boolean isAgendaItemsNotChanged(List<AgendaItem> agendaItems) {
+        List<String> agendaItemContents = this.agendaItems.stream()
+                .map(AgendaItem::getContent)
+                .toList();
+        boolean isExistingContents = agendaItems.stream()
+                .anyMatch(agendaItem -> agendaItemContents.contains(agendaItem.getContent()));
+        return this.agendaItems.size() == agendaItems.size() && isExistingContents;
+    }
+
+    private boolean isVoteStarted() {
+        return !votes.isEmpty();
+    }
+
+    public void addVote(Vote vote) {
+        votes.add(vote);
     }
 }

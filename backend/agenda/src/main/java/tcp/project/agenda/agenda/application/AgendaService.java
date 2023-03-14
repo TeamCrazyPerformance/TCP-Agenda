@@ -6,9 +6,12 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
+import tcp.project.agenda.agenda.application.dto.AgendaItemDto;
+import tcp.project.agenda.agenda.application.dto.AgendaUpdateRequest;
 import tcp.project.agenda.agenda.application.dto.SelectedAgendaItemDto;
 import tcp.project.agenda.agenda.application.dto.VoteRequest;
 import tcp.project.agenda.agenda.application.validator.AgendaCreateValidator;
+import tcp.project.agenda.agenda.application.validator.AgendaUpdateValidator;
 import tcp.project.agenda.agenda.application.validator.VoteValidator;
 import tcp.project.agenda.agenda.domain.Agenda;
 import tcp.project.agenda.agenda.domain.AgendaItem;
@@ -25,6 +28,7 @@ import tcp.project.agenda.agenda.ui.dto.AgendaResponse;
 import tcp.project.agenda.agenda.ui.dto.SelectItemDto;
 import tcp.project.agenda.auth.exception.MemberNotFoundException;
 import tcp.project.agenda.auth.exception.NoSuchGradeException;
+import tcp.project.agenda.common.exception.AgendaException;
 import tcp.project.agenda.common.exception.ValidationError;
 import tcp.project.agenda.common.exception.ValidationException;
 import tcp.project.agenda.member.domain.Grade;
@@ -53,10 +57,9 @@ public class AgendaService {
     public void createAgenda(Long memberId, AgendaCreateRequest request) {
         validateAgendaCreateRequest(request);
         Member member = findMember(memberId);
-        Grade target = findGrade(request);
 
-        Agenda agenda = Agenda.createAgendaFrom(member, request.getTitle(), request.getContent(), target, request.getClosedAt());
-        List<AgendaItem> agendaItems = getAgendaItems(request, agenda);
+        Agenda agenda = Agenda.createAgendaFrom(member, request.getTitle(), request.getContent(), GradeType.from(request.getTarget()), request.getClosedAt());
+        List<AgendaItem> agendaItems = getAgendaItems(request.getSelectList(), agenda);
         agenda.addAgendaItems(agendaItems);
 
         agendaRepository.save(agenda);
@@ -70,8 +73,8 @@ public class AgendaService {
         }
     }
 
-    private List<AgendaItem> getAgendaItems(AgendaCreateRequest request, Agenda agenda) {
-        return request.getSelectList().stream()
+    private List<AgendaItem> getAgendaItems(List<AgendaItemDto> selectItemList, Agenda agenda) {
+        return selectItemList.stream()
                 .map(agendaItemDto -> AgendaItem.createAgendaItem(agenda, agendaItemDto.getContent()))
                 .collect(Collectors.toList());
     }
@@ -194,6 +197,24 @@ public class AgendaService {
             voteRepository.deleteAllInBatch(votes);
         }
         agendaRepository.delete(agenda);
+    }
+
+    @Transactional
+    public void updateAgenda(Long memberId, Long agendaId, AgendaUpdateRequest request) {
+        validateAgendaUpdateRequest(request);
+        Agenda agenda = findAgenda(agendaId);
+        agenda.validateOwner(memberId);
+
+        List<AgendaItem> agendaItems = getAgendaItems(request.getSelectList(), agenda);
+        agenda.update(request.getTitle(), request.getContent(), request.getClosedAt(), request.getTarget(), agendaItems);
+    }
+
+    private void validateAgendaUpdateRequest(AgendaUpdateRequest request) {
+        AgendaUpdateValidator validator = new AgendaUpdateValidator();
+        List<ValidationError> errors = validator.validate(request);
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
     }
 
     private Agenda findAgenda(Long agendaId) {

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
+import tcp.project.agenda.agenda.application.dto.AgendaUpdateRequest;
 import tcp.project.agenda.agenda.domain.Agenda;
 import tcp.project.agenda.agenda.domain.AgendaItem;
 import tcp.project.agenda.agenda.domain.AgendaItemRepository;
@@ -17,6 +18,7 @@ import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
 import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
 import tcp.project.agenda.agenda.exception.AlreadyVoteException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
+import tcp.project.agenda.agenda.exception.InvalidUpdateAlreadyVoteStartedAgendaException;
 import tcp.project.agenda.agenda.exception.NotAgendaOwnerException;
 import tcp.project.agenda.agenda.exception.NotTargetMemberException;
 import tcp.project.agenda.agenda.ui.dto.AgendaDto;
@@ -26,18 +28,26 @@ import tcp.project.agenda.agenda.ui.dto.SelectItemDto;
 import tcp.project.agenda.auth.exception.MemberNotFoundException;
 import tcp.project.agenda.common.exception.ValidationException;
 import tcp.project.agenda.common.support.ApplicationServiceTest;
+import tcp.project.agenda.member.domain.GradeType;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.Mockito.mock;
+import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CLOSED_AT;
+import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CONTENT;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_ITEM1;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_ITEM2;
+import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_TITLE;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
+import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicNotVoteStartedAgendaUpdateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteRequest;
+import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteStartedAgendaUpdateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaCreateRequest;
+import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaUpdateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidVoteRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getNotExistSelectItemVoteRequest;
 
@@ -401,5 +411,113 @@ class AgendaServiceTest extends ApplicationServiceTest {
         //when
         assertThatThrownBy(() -> agendaService.deleteAgenda(general.getId(), 1L))
                 .isInstanceOf(NotAgendaOwnerException.class);
+    }
+
+    @Test
+    @DisplayName("아직 투표가 시작되지 않은 안건일 경우, '제목, 내용, 마감 시간, 대상, 투표 항목'이 바뀔 수 있음")
+    void updateAgendaTest_voteNotStarted() throws Exception {
+        //given
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+        AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
+
+        //when
+        agendaService.updateAgenda(regular.getId(), 1L, request);
+
+        //then
+        Agenda agenda = agendaRepository.findAll().get(0);
+        List<AgendaItem> agendaItems = agendaItemRepository.findAll();
+        assertAll(
+                () -> assertThat(agenda.getTitle()).isEqualTo(request.getTitle()),
+                () -> assertThat(agenda.getContent()).isEqualTo(request.getContent()),
+                () -> assertThat(agenda.getClosedAt()).isEqualTo(request.getClosedAt()),
+                () -> assertThat(agenda.getTarget()).isEqualTo(GradeType.from(request.getTarget())),
+                () -> assertThat(agendaItems).hasSize(3)
+        );
+    }
+
+    @Test
+    @DisplayName("안건이 없을 경우 경우 예외가 발생해야 함")
+    void updateTest_agendaNotFound() throws Exception {
+        //given
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+        AgendaUpdateRequest request = getBasicVoteStartedAgendaUpdateRequest();
+
+        //when then
+        assertThatThrownBy(() -> agendaService.updateAgenda(regular.getId(), 999L, request))
+                .isInstanceOf(AgendaNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("안건 작성자가 아닐 경우 경우 예외가 발생해야 함")
+    void updateTest_notAgendaOwner() throws Exception {
+        //given
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+        AgendaUpdateRequest request = getBasicVoteStartedAgendaUpdateRequest();
+
+        //when then
+        assertThatThrownBy(() -> agendaService.updateAgenda(executive.getId(), 1L, request))
+                .isInstanceOf(NotAgendaOwnerException.class);
+    }
+
+    @Test
+    @DisplayName("마감 시간이 시작 시간보다 빠른 경우 예외가 발생해야 함")
+    void updateTest_invalidClosedAt() throws Exception {
+        //given
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+        AgendaUpdateRequest request = getInvalidClosedAtAgendaUpdateRequest();
+
+        //when then
+        assertThatThrownBy(() -> agendaService.updateAgenda(regular.getId(), 1L, request))
+                .isInstanceOf(InvalidClosedAgendaTimeException.class);
+    }
+
+    @Test
+    @DisplayName("이미 종료된 안건인 경우 예외가 발생해야 함")
+    void updateTest_alreadyClosed() throws Exception {
+        //given
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+        agendaService.closeAgenda(regular.getId(), 1L);
+        AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
+
+        //when then
+        assertThatThrownBy(() -> agendaService.updateAgenda(regular.getId(), 1L, request))
+                .isInstanceOf(AgendaAlreadyClosedException.class);
+    }
+
+    @Test
+    @DisplayName("투표가 시작된 안건일 경우, '제목, 마감 시간'이 바뀔 수 있음")
+    void updateTest_voteStarted() throws Exception {
+        //given
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+        agendaService.vote(regular.getId(), 1L, getBasicVoteRequest());
+        List<AgendaItem> expectedAgendaItems = agendaItemRepository.findAll();
+        AgendaUpdateRequest request = getBasicVoteStartedAgendaUpdateRequest();
+
+        //when
+        agendaService.updateAgenda(regular.getId(), 1L, request);
+
+        //then
+        Agenda agenda = agendaRepository.findAll().get(0);
+        List<AgendaItem> agendaItems = agendaItemRepository.findAll();
+        assertAll(
+                () -> assertThat(agenda.getTitle()).isEqualTo(request.getTitle()),
+                () -> assertThat(agenda.getContent()).isEqualTo(BASIC_AGENDA_CONTENT),
+                () -> assertThat(agenda.getClosedAt()).isEqualTo(request.getClosedAt()),
+                () -> assertThat(agenda.getTarget()).isEqualTo(GradeType.REGULAR),
+                () -> assertThat(agendaItems).hasSameElementsAs(expectedAgendaItems)
+        );
+    }
+
+    @Test
+    @DisplayName("이미 투표가 시작된 안건인 경우에 내용, 대상, 투표 항목을 수정하려고 하면 예외가 발생해야 함")
+    void updateTest_invalidUpdateAlreadyStartedVoteAgenda() throws Exception {
+        //given
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+        agendaService.vote(regular.getId(), 1L, getBasicVoteRequest());
+        AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
+
+        //when then
+        assertThatThrownBy(() -> agendaService.updateAgenda(regular.getId(), 1L, request))
+                .isInstanceOf(InvalidUpdateAlreadyVoteStartedAgendaException.class);
     }
 }
