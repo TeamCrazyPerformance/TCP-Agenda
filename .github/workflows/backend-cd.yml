@@ -1,0 +1,29 @@
+name: Backend-CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: Deploy application
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.BE_HOST }}
+          key: ${{ secrets.BE_KEY }}
+          port: ${{ secrets.BE_PORT }}
+          username: ${{ secrets.BE_USERNAME }}
+          script: |
+            echo ${{ secrets.APPLICATION_PROD }} > ${HOME}/service/TCP-Agenda/config/application-prod.yml
+            ./deploy.sh
