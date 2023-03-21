@@ -25,5 +25,5 @@ jobs:
           port: ${{ secrets.BE_PORT }}
           username: ${{ secrets.BE_USERNAME }}
           script: |
-            echo ${{ secrets.APPLICATION_PROD }} > ${HOME}/service/TCP-Agenda/config/application-prod.yml
-            ./deploy.sh
+            echo ${{ secrets.APPLICATION_PROD }} > ${{ secrets.TCP_AGENDA_ROOT }}/service/TCP-Agenda/config/application-prod.yml
+            ${{ secrets.TCP_AGENDA_ROOT }}/script/deploy.sh
