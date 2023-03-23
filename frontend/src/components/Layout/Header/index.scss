@@ -1,0 +1,10 @@
+@import '~/styles/variables';
+
+.container {
+  background-color: $GRAY_009;
+
+  h1 {
+    font-size: 1.4rem;
+    padding: 1rem;
+  }
+}
