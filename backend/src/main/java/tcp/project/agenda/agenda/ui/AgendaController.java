@@ -47,7 +47,7 @@ public class AgendaController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{agendaId}/cancel")
+    @DeleteMapping("/{agendaId}/vote")
     public ResponseEntity<Void> cancelVote(@Authenticated Long memberId, @PathVariable Long agendaId) {
         voteService.cancelVote(memberId, agendaId);
         return ResponseEntity.ok().build();

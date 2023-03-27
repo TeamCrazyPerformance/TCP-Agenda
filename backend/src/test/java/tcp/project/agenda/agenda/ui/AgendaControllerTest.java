@@ -7,8 +7,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
 import tcp.project.agenda.agenda.application.dto.AgendaUpdateRequest;
-import tcp.project.agenda.agenda.domain.Agenda;
-import tcp.project.agenda.agenda.domain.AgendaItem;
 import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
 import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
 import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
@@ -20,9 +18,6 @@ import tcp.project.agenda.agenda.exception.NotTargetMemberException;
 import tcp.project.agenda.agenda.ui.dto.AgendaListResponse;
 import tcp.project.agenda.agenda.ui.dto.AgendaResponse;
 import tcp.project.agenda.common.support.MockControllerTest;
-import tcp.project.agenda.member.domain.GradeType;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -37,7 +32,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CONTENT;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaListResponse;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaResponse;
@@ -45,7 +39,6 @@ import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicNotVoteSta
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteStartedAgendaUpdateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaCreateRequest;
-import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaUpdateRequest;
 import static tcp.project.agenda.common.fixture.AuthFixture.ACCESS_TOKEN;
 
 class AgendaControllerTest extends MockControllerTest {
@@ -257,7 +250,7 @@ class AgendaControllerTest extends MockControllerTest {
         //given
 
         //when then
-        mockMvc.perform(delete("/agenda/1/cancel")
+        mockMvc.perform(delete("/agenda/1/vote")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN))
                 .andExpect(status().isOk());
     }
