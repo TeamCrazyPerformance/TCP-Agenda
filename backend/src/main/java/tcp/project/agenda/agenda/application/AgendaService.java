@@ -8,31 +8,21 @@ import org.springframework.transaction.annotation.Transactional;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
 import tcp.project.agenda.agenda.application.dto.AgendaItemDto;
 import tcp.project.agenda.agenda.application.dto.AgendaUpdateRequest;
-import tcp.project.agenda.agenda.application.dto.SelectedAgendaItemDto;
-import tcp.project.agenda.agenda.application.dto.VoteRequest;
 import tcp.project.agenda.agenda.application.validator.AgendaCreateValidator;
 import tcp.project.agenda.agenda.application.validator.AgendaUpdateValidator;
-import tcp.project.agenda.agenda.application.validator.VoteValidator;
 import tcp.project.agenda.agenda.domain.Agenda;
 import tcp.project.agenda.agenda.domain.AgendaItem;
-import tcp.project.agenda.agenda.domain.AgendaItemRepository;
 import tcp.project.agenda.agenda.domain.AgendaRepository;
 import tcp.project.agenda.agenda.domain.Vote;
 import tcp.project.agenda.agenda.domain.VoteRepository;
-import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
 import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
-import tcp.project.agenda.agenda.exception.AlreadyVoteException;
 import tcp.project.agenda.agenda.ui.dto.AgendaDto;
 import tcp.project.agenda.agenda.ui.dto.AgendaListResponse;
 import tcp.project.agenda.agenda.ui.dto.AgendaResponse;
 import tcp.project.agenda.agenda.ui.dto.SelectItemDto;
 import tcp.project.agenda.auth.exception.MemberNotFoundException;
-import tcp.project.agenda.auth.exception.NoSuchGradeException;
-import tcp.project.agenda.common.exception.AgendaException;
 import tcp.project.agenda.common.exception.ValidationError;
 import tcp.project.agenda.common.exception.ValidationException;
-import tcp.project.agenda.member.domain.Grade;
-import tcp.project.agenda.member.domain.GradeRepository;
 import tcp.project.agenda.member.domain.GradeType;
 import tcp.project.agenda.member.domain.Member;
 import tcp.project.agenda.member.domain.MemberGradeRepository;
@@ -48,12 +38,8 @@ public class AgendaService {
 
     private final MemberRepository memberRepository;
     private final AgendaRepository agendaRepository;
-    private final GradeRepository gradeRepository;
-    private final AgendaItemRepository agendaItemRepository;
     private final VoteRepository voteRepository;
     private final MemberGradeRepository memberGradeRepository;
-
-    private final VoteService voteService;
 
     @Transactional
     public void createAgenda(Long memberId, AgendaCreateRequest request) {
@@ -156,11 +142,6 @@ public class AgendaService {
     private Agenda findAgenda(Long agendaId) {
         return agendaRepository.findById(agendaId)
                 .orElseThrow(() -> new AgendaNotFoundException(agendaId));
-    }
-
-    private Grade findGrade(AgendaCreateRequest request) {
-        return gradeRepository.findByGradeType(GradeType.from(request.getTarget()))
-                .orElseThrow(() -> new NoSuchGradeException(request.getTarget()));
     }
 
     private Member findMember(Long memberId) {
