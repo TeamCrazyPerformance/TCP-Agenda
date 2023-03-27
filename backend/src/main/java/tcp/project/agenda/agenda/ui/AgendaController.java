@@ -35,9 +35,33 @@ public class AgendaController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("")
+    public ResponseEntity<AgendaListResponse> getAgendaList(@PageableDefault Pageable pageable) {
+        AgendaListResponse response = agendaService.getAgendaList(pageable);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{agendaId}")
+    public ResponseEntity<AgendaResponse> getAgenda(@PathVariable Long agendaId) {
+        AgendaResponse response = agendaService.getAgenda(agendaId);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/{agendaId}")
     public ResponseEntity<Void> closeAgenda(@Authenticated Long memberId, @PathVariable Long agendaId) {
         agendaService.closeAgenda(memberId, agendaId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{agendaId}")
+    public ResponseEntity<Void> deleteAgenda(@Authenticated Long memberId, @PathVariable Long agendaId) {
+        agendaService.deleteAgenda(memberId, agendaId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{agendaId}")
+    public ResponseEntity<Void> updateAgenda(@Authenticated Long memberId, @PathVariable Long agendaId, @RequestBody AgendaUpdateRequest request) {
+        agendaService.updateAgenda(memberId, agendaId, request);
         return ResponseEntity.ok().build();
     }
 
@@ -50,30 +74,6 @@ public class AgendaController {
     @DeleteMapping("/{agendaId}/vote")
     public ResponseEntity<Void> cancelVote(@Authenticated Long memberId, @PathVariable Long agendaId) {
         voteService.cancelVote(memberId, agendaId);
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("")
-    public ResponseEntity<AgendaListResponse> getAgendaList(@Authenticated Long memberId, @PageableDefault Pageable pageable) {
-        AgendaListResponse response = agendaService.getAgendaList(pageable);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/{agendaId}")
-    public ResponseEntity<AgendaResponse> getAgenda(@Authenticated Long memberId, @PathVariable Long agendaId) {
-        AgendaResponse response = agendaService.getAgenda(agendaId);
-        return ResponseEntity.ok(response);
-    }
-
-    @DeleteMapping("/{agendaId}")
-    public ResponseEntity<Void> deleteAgenda(@Authenticated Long memberId, @PathVariable Long agendaId) {
-        agendaService.deleteAgenda(memberId, agendaId);
-        return ResponseEntity.ok().build();
-    }
-
-    @PutMapping("/{agendaId}")
-    public ResponseEntity<Void> updateAgenda(@Authenticated Long memberId, @PathVariable Long agendaId, @RequestBody AgendaUpdateRequest request) {
-        agendaService.updateAgenda(memberId, agendaId, request);
         return ResponseEntity.ok().build();
     }
 }
