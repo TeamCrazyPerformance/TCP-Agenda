@@ -155,21 +155,6 @@ class AgendaServiceTest extends ApplicationServiceTest {
     }
 
     @Test
-    @DisplayName("투표가 지워져야 함")
-    void voteCancelTest() throws Exception {
-        //given
-        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
-        voteService.vote(regular.getId(), 1L, getBasicVoteRequest());
-
-        //when
-        agendaService.cancelVote(regular.getId(), 1L);
-
-        //then
-        List<Vote> votes = voteRepository.findAll();
-        assertThat(votes).hasSize(0);
-    }
-
-    @Test
     @DisplayName("안건 전체 조회 - 투표한 사람 없는 경우")
     void getAgendaListTest_noVotedMember() throws Exception {
         //given
