@@ -27,6 +27,9 @@ import static tcp.project.agenda.common.fixture.AgendaFixture.getNotExistSelectI
 class VoteServiceTest extends ApplicationServiceTest {
 
     @Autowired
+    VoteService voteService;
+
+    @Autowired
     AgendaService agendaService;
 
     @Autowired
@@ -39,7 +42,7 @@ class VoteServiceTest extends ApplicationServiceTest {
         agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
 
         //when
-        agendaService.vote(regular.getId(), 1L, getBasicVoteRequest());
+        voteService.vote(regular.getId(), 1L, getBasicVoteRequest());
 
         //then
         List<Vote> voteList = voteRepository.findAll();
@@ -52,7 +55,7 @@ class VoteServiceTest extends ApplicationServiceTest {
         //given
 
         //when then
-        assertThatThrownBy(() -> agendaService.vote(regular.getId(), 1L, getInvalidVoteRequest()))
+        assertThatThrownBy(() -> voteService.vote(regular.getId(), 1L, getInvalidVoteRequest()))
                 .isInstanceOf(ValidationException.class);
     }
 
@@ -65,7 +68,7 @@ class VoteServiceTest extends ApplicationServiceTest {
 
 
         //when then
-        assertThatThrownBy(() -> agendaService.vote(regular.getId(), notExistAgendaId, getBasicVoteRequest()))
+        assertThatThrownBy(() -> voteService.vote(regular.getId(), notExistAgendaId, getBasicVoteRequest()))
                 .isInstanceOf(AgendaNotFoundException.class);
     }
 
@@ -77,7 +80,7 @@ class VoteServiceTest extends ApplicationServiceTest {
         agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
 
         //when then
-        assertThatThrownBy(() -> agendaService.vote(notExistMember, 1L, getBasicVoteRequest()))
+        assertThatThrownBy(() -> voteService.vote(notExistMember, 1L, getBasicVoteRequest()))
                 .isInstanceOf(MemberNotFoundException.class);
     }
 
@@ -89,7 +92,7 @@ class VoteServiceTest extends ApplicationServiceTest {
         agendaService.closeAgenda(regular.getId(), 1L);
 
         //when then
-        assertThatThrownBy(() -> agendaService.vote(regular.getId(), 1L, getBasicVoteRequest()))
+        assertThatThrownBy(() -> voteService.vote(regular.getId(), 1L, getBasicVoteRequest()))
                 .isInstanceOf(AgendaAlreadyClosedException.class);
     }
 
@@ -100,7 +103,7 @@ class VoteServiceTest extends ApplicationServiceTest {
         agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
 
         //when then
-        assertThatThrownBy(() -> agendaService.vote(regular.getId(), 1L, getNotExistSelectItemVoteRequest()))
+        assertThatThrownBy(() -> voteService.vote(regular.getId(), 1L, getNotExistSelectItemVoteRequest()))
                 .isInstanceOf(AgendaItemNotFoundException.class);
     }
 
@@ -111,7 +114,7 @@ class VoteServiceTest extends ApplicationServiceTest {
         agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
 
         //when then
-        assertThatThrownBy(() -> agendaService.vote(general.getId(), 1L, getNotExistSelectItemVoteRequest()))
+        assertThatThrownBy(() -> voteService.vote(general.getId(), 1L, getNotExistSelectItemVoteRequest()))
                 .isInstanceOf(NotTargetMemberException.class);
     }
 
@@ -120,10 +123,10 @@ class VoteServiceTest extends ApplicationServiceTest {
     void voteTest_alreadyVote() throws Exception {
         //given
         agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
-        agendaService.vote(regular.getId(), 1L, getBasicVoteRequest());
+        voteService.vote(regular.getId(), 1L, getBasicVoteRequest());
 
         //when then
-        assertThatThrownBy(() -> agendaService.vote(regular.getId(), 1L, getBasicVoteRequest()))
+        assertThatThrownBy(() -> voteService.vote(regular.getId(), 1L, getBasicVoteRequest()))
                 .isInstanceOf(AlreadyVoteException.class);
     }
 

@@ -48,13 +48,14 @@ import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteStarte
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaUpdateRequest;
-import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidVoteRequest;
-import static tcp.project.agenda.common.fixture.AgendaFixture.getNotExistSelectItemVoteRequest;
 
 class AgendaServiceTest extends ApplicationServiceTest {
 
     @Autowired
     AgendaService agendaService;
+
+    @Autowired
+    VoteService voteService;
 
     @Autowired
     AgendaRepository agendaRepository;
@@ -158,7 +159,7 @@ class AgendaServiceTest extends ApplicationServiceTest {
     void voteCancelTest() throws Exception {
         //given
         agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
-        agendaService.vote(regular.getId(), 1L, getBasicVoteRequest());
+        voteService.vote(regular.getId(), 1L, getBasicVoteRequest());
 
         //when
         agendaService.cancelVote(regular.getId(), 1L);
@@ -195,8 +196,8 @@ class AgendaServiceTest extends ApplicationServiceTest {
         //given
         Pageable pageable = PageRequest.of(0, 10);
         agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
-        agendaService.vote(regular.getId(), 1L, getBasicVoteRequest());
-        agendaService.vote(executiveRegular.getId(), 1L, getBasicVoteRequest());
+        voteService.vote(regular.getId(), 1L, getBasicVoteRequest());
+        voteService.vote(executiveRegular.getId(), 1L, getBasicVoteRequest());
 
         //when
         AgendaListResponse response = agendaService.getAgendaList(pageable);
@@ -239,8 +240,8 @@ class AgendaServiceTest extends ApplicationServiceTest {
         //given
         Long agendaId = 1L;
         agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
-        agendaService.vote(regular.getId(), agendaId, getBasicVoteRequest());
-        agendaService.vote(executiveRegular.getId(), agendaId, getBasicVoteRequest());
+        voteService.vote(regular.getId(), agendaId, getBasicVoteRequest());
+        voteService.vote(executiveRegular.getId(), agendaId, getBasicVoteRequest());
 
         //when
         AgendaResponse response = agendaService.getAgenda(agendaId);
@@ -281,8 +282,8 @@ class AgendaServiceTest extends ApplicationServiceTest {
         //given
         Long agendaId = 1L;
         agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
-        agendaService.vote(regular.getId(), agendaId, getBasicVoteRequest());
-        agendaService.vote(executiveRegular.getId(), agendaId, getBasicVoteRequest());
+        voteService.vote(regular.getId(), agendaId, getBasicVoteRequest());
+        voteService.vote(executiveRegular.getId(), agendaId, getBasicVoteRequest());
 
         //when
         agendaService.deleteAgenda(regular.getId(), agendaId);
@@ -394,7 +395,7 @@ class AgendaServiceTest extends ApplicationServiceTest {
     void updateTest_voteStarted() throws Exception {
         //given
         agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
-        agendaService.vote(regular.getId(), 1L, getBasicVoteRequest());
+        voteService.vote(regular.getId(), 1L, getBasicVoteRequest());
         List<AgendaItem> expectedAgendaItems = agendaItemRepository.findAll();
         AgendaUpdateRequest request = getBasicVoteStartedAgendaUpdateRequest();
 
@@ -418,7 +419,7 @@ class AgendaServiceTest extends ApplicationServiceTest {
     void updateTest_invalidUpdateAlreadyStartedVoteAgenda() throws Exception {
         //given
         agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
-        agendaService.vote(regular.getId(), 1L, getBasicVoteRequest());
+        voteService.vote(regular.getId(), 1L, getBasicVoteRequest());
         AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
 
         //when then
