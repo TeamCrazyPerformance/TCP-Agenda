@@ -7,8 +7,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
 import tcp.project.agenda.agenda.application.dto.AgendaUpdateRequest;
-import tcp.project.agenda.agenda.domain.Agenda;
-import tcp.project.agenda.agenda.domain.AgendaItem;
 import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
 import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
 import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
@@ -20,9 +18,6 @@ import tcp.project.agenda.agenda.exception.NotTargetMemberException;
 import tcp.project.agenda.agenda.ui.dto.AgendaListResponse;
 import tcp.project.agenda.agenda.ui.dto.AgendaResponse;
 import tcp.project.agenda.common.support.MockControllerTest;
-import tcp.project.agenda.member.domain.GradeType;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -37,7 +32,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CONTENT;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaListResponse;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaResponse;
@@ -45,7 +39,6 @@ import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicNotVoteSta
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteStartedAgendaUpdateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaCreateRequest;
-import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaUpdateRequest;
 import static tcp.project.agenda.common.fixture.AuthFixture.ACCESS_TOKEN;
 
 class AgendaControllerTest extends MockControllerTest {
@@ -145,7 +138,7 @@ class AgendaControllerTest extends MockControllerTest {
     @DisplayName("투표에 성공하면 200을 응답해야 함")
     void voteTest() throws Exception {
         //given
-        doNothing().when(agendaService).vote(any(), any(), any());
+        doNothing().when(voteService).vote(any(), any(), any());
 
         //when then
         mockMvc.perform(post("/agenda/1/vote")
@@ -160,7 +153,7 @@ class AgendaControllerTest extends MockControllerTest {
     void voteTest_agendaNotFound() throws Exception {
         //given
         doThrow(new AgendaNotFoundException(1L))
-                .when(agendaService)
+                .when(voteService)
                 .vote(any(), any(), any());
 
         //when then
@@ -176,7 +169,7 @@ class AgendaControllerTest extends MockControllerTest {
     void voteTest_notAgendaOwner() throws Exception {
         //given
         doThrow(new NotAgendaOwnerException(1L, 1L))
-                .when(agendaService)
+                .when(voteService)
                 .vote(any(), any(), any());
 
         //when then
@@ -192,7 +185,7 @@ class AgendaControllerTest extends MockControllerTest {
     void voteTest_alreadyClosedAgenda() throws Exception {
         //given
         doThrow(new AgendaAlreadyClosedException())
-                .when(agendaService)
+                .when(voteService)
                 .vote(any(), any(), any());
 
         //when then
@@ -208,7 +201,7 @@ class AgendaControllerTest extends MockControllerTest {
     void voteTest_alreadyVote() throws Exception {
         //given
         doThrow(new AlreadyVoteException(1L))
-                .when(agendaService)
+                .when(voteService)
                 .vote(any(), any(), any());
 
         //when then
@@ -224,7 +217,7 @@ class AgendaControllerTest extends MockControllerTest {
     void voteTest_notTarget() throws Exception {
         //given
         doThrow(new NotTargetMemberException())
-                .when(agendaService)
+                .when(voteService)
                 .vote(any(), any(), any());
 
         //when then
@@ -240,7 +233,7 @@ class AgendaControllerTest extends MockControllerTest {
     void voteTest_agendaItemNotFound() throws Exception {
         //given
         doThrow(new AgendaItemNotFoundException(1L))
-                .when(agendaService)
+                .when(voteService)
                 .vote(any(), any(), any());
 
         //when then
@@ -257,7 +250,7 @@ class AgendaControllerTest extends MockControllerTest {
         //given
 
         //when then
-        mockMvc.perform(delete("/agenda/1/cancel")
+        mockMvc.perform(delete("/agenda/1/vote")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN))
                 .andExpect(status().isOk());
     }

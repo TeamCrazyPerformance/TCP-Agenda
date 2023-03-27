@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.test.web.servlet.MockMvc;
 import tcp.project.agenda.agenda.application.AgendaService;
+import tcp.project.agenda.agenda.application.VoteService;
 import tcp.project.agenda.auth.application.AuthService;
 import tcp.project.agenda.auth.infrastructure.JwtTokenProvider;
 
@@ -28,4 +29,7 @@ public class MockControllerTest {
 
     @MockBean
     protected AgendaService agendaService;
+
+    @MockBean
+    protected VoteService voteService;
 }
