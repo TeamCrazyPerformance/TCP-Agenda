@@ -109,14 +109,8 @@ public class AgendaService {
     }
 
     @Transactional
-    public void vote(Long memberId, Long agendaId, VoteRequest request) {
-        voteService.vote(memberId, agendaId, request);
-    }
-
-    @Transactional
     public void cancelVote(Long memberId, Long agendaId) {
-        List<Vote> votes = voteRepository.findByMemberIdAndAgendaId(memberId, agendaId);
-        voteRepository.deleteAllInBatch(votes);
+        voteService.cancelVote(memberId, agendaId);
     }
 
     public AgendaResponse getAgenda(Long agendaId) {

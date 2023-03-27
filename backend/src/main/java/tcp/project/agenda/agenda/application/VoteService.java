@@ -91,6 +91,12 @@ public class VoteService {
                 .ifPresent(voteId -> {throw new AgendaItemNotFoundException(voteId);});
     }
 
+    @Transactional
+    public void cancelVote(Long memberId, Long agendaId) {
+        List<Vote> votes = voteRepository.findByMemberIdAndAgendaId(memberId, agendaId);
+        voteRepository.deleteAllInBatch(votes);
+    }
+
     private Agenda findAgenda(Long agendaId) {
         return agendaRepository.findById(agendaId)
                 .orElseThrow(() -> new AgendaNotFoundException(agendaId));
