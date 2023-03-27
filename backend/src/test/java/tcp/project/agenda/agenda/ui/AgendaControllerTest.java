@@ -145,7 +145,7 @@ class AgendaControllerTest extends MockControllerTest {
     @DisplayName("투표에 성공하면 200을 응답해야 함")
     void voteTest() throws Exception {
         //given
-        doNothing().when(agendaService).vote(any(), any(), any());
+        doNothing().when(voteService).vote(any(), any(), any());
 
         //when then
         mockMvc.perform(post("/agenda/1/vote")
@@ -160,7 +160,7 @@ class AgendaControllerTest extends MockControllerTest {
     void voteTest_agendaNotFound() throws Exception {
         //given
         doThrow(new AgendaNotFoundException(1L))
-                .when(agendaService)
+                .when(voteService)
                 .vote(any(), any(), any());
 
         //when then
@@ -176,7 +176,7 @@ class AgendaControllerTest extends MockControllerTest {
     void voteTest_notAgendaOwner() throws Exception {
         //given
         doThrow(new NotAgendaOwnerException(1L, 1L))
-                .when(agendaService)
+                .when(voteService)
                 .vote(any(), any(), any());
 
         //when then
@@ -192,7 +192,7 @@ class AgendaControllerTest extends MockControllerTest {
     void voteTest_alreadyClosedAgenda() throws Exception {
         //given
         doThrow(new AgendaAlreadyClosedException())
-                .when(agendaService)
+                .when(voteService)
                 .vote(any(), any(), any());
 
         //when then
@@ -208,7 +208,7 @@ class AgendaControllerTest extends MockControllerTest {
     void voteTest_alreadyVote() throws Exception {
         //given
         doThrow(new AlreadyVoteException(1L))
-                .when(agendaService)
+                .when(voteService)
                 .vote(any(), any(), any());
 
         //when then
@@ -224,7 +224,7 @@ class AgendaControllerTest extends MockControllerTest {
     void voteTest_notTarget() throws Exception {
         //given
         doThrow(new NotTargetMemberException())
-                .when(agendaService)
+                .when(voteService)
                 .vote(any(), any(), any());
 
         //when then
@@ -240,7 +240,7 @@ class AgendaControllerTest extends MockControllerTest {
     void voteTest_agendaItemNotFound() throws Exception {
         //given
         doThrow(new AgendaItemNotFoundException(1L))
-                .when(agendaService)
+                .when(voteService)
                 .vote(any(), any(), any());
 
         //when then
