@@ -49,7 +49,7 @@ public class AgendaController {
 
     @DeleteMapping("/{agendaId}/cancel")
     public ResponseEntity<Void> cancelVote(@Authenticated Long memberId, @PathVariable Long agendaId) {
-        agendaService.cancelVote(memberId, agendaId);
+        voteService.cancelVote(memberId, agendaId);
         return ResponseEntity.ok().build();
     }
 

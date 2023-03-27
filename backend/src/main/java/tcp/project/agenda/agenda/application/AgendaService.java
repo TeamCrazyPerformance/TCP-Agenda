@@ -108,11 +108,6 @@ public class AgendaService {
         agenda.close();
     }
 
-    @Transactional
-    public void cancelVote(Long memberId, Long agendaId) {
-        voteService.cancelVote(memberId, agendaId);
-    }
-
     public AgendaResponse getAgenda(Long agendaId) {
         Agenda agenda = findAgenda(agendaId);
 
