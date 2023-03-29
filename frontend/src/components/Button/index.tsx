@@ -1,9 +1,22 @@
-import styles from './button.scss';
+import styles from './index.scss';
 
-function Button() {
+interface ButtonProps {
+  children: React.ReactNode;
+}
+
+function Button({
+  children,
+  ...inputAttribute
+}: ButtonProps &
+  React.DetailedHTMLProps<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    HTMLButtonElement
+  >) {
   return (
     <>
-      <button className={styles.button} ></button>
+      <button className={styles.button} {...inputAttribute}>
+        {children}
+      </button>
     </>
   );
 }
