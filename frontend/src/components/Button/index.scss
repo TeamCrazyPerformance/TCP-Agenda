@@ -1,0 +1,9 @@
+@import '~/styles/variables';
+.button {
+  font-size: 1rem;
+  color: $WHITE_000;
+  text-align: center;
+  line-height: 2.5rem;
+  border-radius: 4px;
+  background-color: $GRAY_005;
+}
