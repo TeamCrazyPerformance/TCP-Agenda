@@ -1,0 +1,11 @@
+@import '~/styles/variables';
+.input {
+  padding: 6rem 12rem;
+  width: 100%;
+  height: 100%;
+  background-color: $WHITE_000;
+  border: 1px solid $GRAY_006;
+  border-radius: 4rem;
+  box-sizing: border-box;
+  font-size: 14rem;
+}
