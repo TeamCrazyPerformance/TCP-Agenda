@@ -115,7 +115,7 @@ public class Agenda extends BaseEntity {
         validateAlreadyClosed();
         validateClosedAt(closedAt);
         if (isVoteStarted()) {
-            validateUpdatingAlreadyStartedVote(content, target);
+            validateUpdatingAlreadyStartedVote(title, content, target);
         }
         this.title = title;
         this.content = content;
@@ -123,14 +123,14 @@ public class Agenda extends BaseEntity {
         this.target = GradeType.from(target);
     }
 
-    private void validateUpdatingAlreadyStartedVote(String content, String target) {
-        if (!isAgendaInfoNotChanged(content, target)) {
+    private void validateUpdatingAlreadyStartedVote(String title, String content, String target) {
+        if (isChanged(this.title, title) || isChanged(this.content, content) || isChanged(this.target, GradeType.from(target))) {
             throw new InvalidUpdateAlreadyVoteStartedAgendaException();
         }
     }
 
-    private boolean isAgendaInfoNotChanged(String content, String target) {
-        return this.content.equals(content) && this.target.equals(GradeType.from(target));
+    private <T> boolean isChanged(T original, T current) {
+        return !original.equals(current);
     }
 
     private boolean isVoteStarted() {

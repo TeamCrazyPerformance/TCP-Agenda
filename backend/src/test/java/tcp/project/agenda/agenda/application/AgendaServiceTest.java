@@ -14,18 +14,14 @@ import tcp.project.agenda.agenda.domain.AgendaRepository;
 import tcp.project.agenda.agenda.domain.Vote;
 import tcp.project.agenda.agenda.domain.VoteRepository;
 import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
-import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
 import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
-import tcp.project.agenda.agenda.exception.AlreadyVoteException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
 import tcp.project.agenda.agenda.exception.InvalidUpdateAlreadyVoteStartedAgendaException;
 import tcp.project.agenda.agenda.exception.NotAgendaOwnerException;
-import tcp.project.agenda.agenda.exception.NotTargetMemberException;
 import tcp.project.agenda.agenda.ui.dto.AgendaDto;
 import tcp.project.agenda.agenda.ui.dto.AgendaListResponse;
 import tcp.project.agenda.agenda.ui.dto.AgendaResponse;
 import tcp.project.agenda.agenda.ui.dto.SelectItemDto;
-import tcp.project.agenda.auth.exception.MemberNotFoundException;
 import tcp.project.agenda.common.exception.ValidationException;
 import tcp.project.agenda.common.support.ApplicationServiceTest;
 import tcp.project.agenda.member.domain.GradeType;
@@ -36,13 +32,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.mock;
-import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CLOSED_AT;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CONTENT;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_ITEM1;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_ITEM2;
-import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_TITLE;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
-import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicNotVoteStartedAgendaUpdateRequest;
+import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteNotStartedAgendaUpdateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteStartedAgendaUpdateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidAgendaCreateRequest;
@@ -309,7 +303,7 @@ class AgendaServiceTest extends ApplicationServiceTest {
     void updateAgendaTest_voteNotStarted() throws Exception {
         //given
         agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
-        AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
+        AgendaUpdateRequest request = getBasicVoteNotStartedAgendaUpdateRequest();
 
         //when
         agendaService.updateAgenda(regular.getId(), 1L, request);
@@ -366,7 +360,7 @@ class AgendaServiceTest extends ApplicationServiceTest {
         //given
         agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
         agendaService.closeAgenda(regular.getId(), 1L);
-        AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
+        AgendaUpdateRequest request = getBasicVoteNotStartedAgendaUpdateRequest();
 
         //when then
         assertThatThrownBy(() -> agendaService.updateAgenda(regular.getId(), 1L, request))
@@ -374,7 +368,7 @@ class AgendaServiceTest extends ApplicationServiceTest {
     }
 
     @Test
-    @DisplayName("투표가 시작된 안건일 경우, '제목, 마감 시간'이 바뀔 수 있음")
+    @DisplayName("투표가 시작된 안건일 경우, '마감 시간'이 바뀔 수 있음")
     void updateTest_voteStarted() throws Exception {
         //given
         agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
@@ -403,7 +397,7 @@ class AgendaServiceTest extends ApplicationServiceTest {
         //given
         agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
         voteService.vote(regular.getId(), 1L, getBasicVoteRequest());
-        AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
+        AgendaUpdateRequest request = getBasicVoteNotStartedAgendaUpdateRequest();
 
         //when then
         assertThatThrownBy(() -> agendaService.updateAgenda(regular.getId(), 1L, request))

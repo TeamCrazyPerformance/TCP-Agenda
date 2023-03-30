@@ -30,7 +30,7 @@ import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CONTE
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_SELECTED_LIST_DTO;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_TITLE;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
-import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicNotVoteStartedAgendaUpdateRequest;
+import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteNotStartedAgendaUpdateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteStartedAgendaUpdateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaUpdateRequest;
@@ -148,11 +148,11 @@ class AgendaTest {
     }
 
     @Test
-    @DisplayName("아직 투표가 시작되지 않은 안건일 경우, '제목, 내용, 마감 시간, 대상, 투표 항목'이 바뀔 수 있음")
+    @DisplayName("아직 투표가 시작되지 않은 안건일 경우, '제목, 내용, 마감 시간, 대상'이 바뀔 수 있음")
     void updateTest_voteNotStarted() throws Exception {
         //given
         Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, GradeType.REGULAR, BASIC_AGENDA_CLOSED_AT);
-        AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
+        AgendaUpdateRequest request = getBasicVoteNotStartedAgendaUpdateRequest();
 
         //when
         agenda.update(request.getTitle(), request.getContent(), request.getClosedAt(), request.getTarget());
@@ -184,7 +184,7 @@ class AgendaTest {
         //given
         Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, GradeType.REGULAR, BASIC_AGENDA_CLOSED_AT);
         agenda.close();
-        AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
+        AgendaUpdateRequest request = getBasicVoteNotStartedAgendaUpdateRequest();
 
         //when then
         assertThatThrownBy(() -> agenda.update(request.getTitle(), request.getContent(), request.getClosedAt(), request.getTarget()))
@@ -192,7 +192,7 @@ class AgendaTest {
     }
 
     @Test
-    @DisplayName("투표가 시작된 안건일 경우, '제목, 마감 시간'이 바뀔 수 있음")
+    @DisplayName("투표가 시작된 안건일 경우, '마감 시간'이 바뀔 수 있음")
     void updateTest_voteStarted() throws Exception {
         //given
         Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, GradeType.REGULAR, BASIC_AGENDA_CLOSED_AT);
@@ -207,7 +207,7 @@ class AgendaTest {
         //then
         List<AgendaItem> changedAgendaItems = agenda.getAgendaItems();
         assertAll(
-                () -> assertThat(agenda.getTitle()).isEqualTo(request.getTitle()),
+                () -> assertThat(agenda.getTitle()).isEqualTo(BASIC_AGENDA_TITLE),
                 () -> assertThat(agenda.getContent()).isEqualTo(BASIC_AGENDA_CONTENT),
                 () -> assertThat(agenda.getClosedAt()).isEqualTo(request.getClosedAt()),
                 () -> assertThat(agenda.getTarget()).isEqualTo(GradeType.REGULAR),
@@ -223,7 +223,7 @@ class AgendaTest {
         List<AgendaItem> agendaItemList = BASIC_AGENDA_SELECTED_LIST_DTO.stream().map(agendaItemDto -> new AgendaItem(agenda, agendaItemDto.getContent())).collect(Collectors.toList());
         agenda.addAgendaItems(agendaItemList);
         agenda.addVote(mock(Vote.class));
-        AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
+        AgendaUpdateRequest request = getBasicVoteNotStartedAgendaUpdateRequest();
 
         //when then
         assertThatThrownBy(() -> agenda.update(request.getTitle(), request.getContent(), request.getClosedAt(), request.getTarget()))
