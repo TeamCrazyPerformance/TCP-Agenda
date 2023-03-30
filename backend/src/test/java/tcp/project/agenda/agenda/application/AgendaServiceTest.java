@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
+import tcp.project.agenda.agenda.application.dto.AgendaItemUpdateRequest;
 import tcp.project.agenda.agenda.application.dto.AgendaUpdateRequest;
 import tcp.project.agenda.agenda.domain.Agenda;
 import tcp.project.agenda.agenda.domain.AgendaItem;
@@ -32,10 +33,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.mock;
+import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CLOSED_AT;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CONTENT;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_ITEM1;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_ITEM2;
+import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_TITLE;
+import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_UPDATE_AGENDA_ITEM;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
+import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaItemUpdateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteNotStartedAgendaUpdateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteStartedAgendaUpdateRequest;
@@ -401,6 +406,62 @@ class AgendaServiceTest extends ApplicationServiceTest {
 
         //when then
         assertThatThrownBy(() -> agendaService.updateAgenda(regular.getId(), 1L, request))
+                .isInstanceOf(InvalidUpdateAlreadyVoteStartedAgendaException.class);
+    }
+
+    @Test
+    @DisplayName("투표 항목이 수정 되어야 함")
+    void updateAgendaItemsTest() throws Exception {
+        //given
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+        AgendaItemUpdateRequest request = getBasicAgendaItemUpdateRequest();
+
+        //when
+        agendaService.updateAgendaItems(regular.getId(), 1L, request);
+
+        //then
+        List<AgendaItem> agendaItems = agendaItemRepository.findAll();
+        assertAll(
+                () -> assertThat(agendaItems).hasSize(1),
+                () -> assertThat(agendaItems.get(0).getContent()).isEqualTo(BASIC_UPDATE_AGENDA_ITEM)
+        );
+    }
+
+    @Test
+    @DisplayName("안건 작석자가 아닌 경우 투표 항목을 수정하면 예외가 발생해야 함")
+    void updateAgendaItemsTest_notAgendaOwner() throws Exception {
+        //given
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+        AgendaItemUpdateRequest request = getBasicAgendaItemUpdateRequest();
+
+        //when then
+        assertThatThrownBy(() -> agendaService.updateAgendaItems(general.getId(), 1L, request))
+                .isInstanceOf(NotAgendaOwnerException.class);
+    }
+
+    @Test
+    @DisplayName("마감된 안건인 경우 투표 항목을 수정하면 예외가 발생해야 함")
+    void updateAgendaItemsTest_alreadyClosed() throws Exception {
+        //given
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+        AgendaItemUpdateRequest request = getBasicAgendaItemUpdateRequest();
+        agendaService.closeAgenda(regular.getId(), 1L);
+
+        //when then
+        assertThatThrownBy(() -> agendaService.updateAgendaItems(regular.getId(), 1L, request))
+                .isInstanceOf(AgendaAlreadyClosedException.class);
+    }
+
+    @Test
+    @DisplayName("투표가 시작된 안건인 경우 투표 항목을 수정하면 예외가 발생해야 함")
+    void updateAgendaItemsTest_alreadyVoteStarted() throws Exception {
+        //given
+        agendaService.createAgenda(regular.getId(), getBasicAgendaCreateRequest());
+        AgendaItemUpdateRequest request = getBasicAgendaItemUpdateRequest();
+        voteService.vote(regular.getId(), 1L, getBasicVoteRequest());
+
+        //when then
+        assertThatThrownBy(() -> agendaService.updateAgendaItems(regular.getId(), 1L, request))
                 .isInstanceOf(InvalidUpdateAlreadyVoteStartedAgendaException.class);
     }
 }

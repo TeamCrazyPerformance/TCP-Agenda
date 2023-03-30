@@ -2,6 +2,7 @@ package tcp.project.agenda.common.fixture;
 
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
 import tcp.project.agenda.agenda.application.dto.AgendaItemDto;
+import tcp.project.agenda.agenda.application.dto.AgendaItemUpdateRequest;
 import tcp.project.agenda.agenda.application.dto.AgendaUpdateRequest;
 import tcp.project.agenda.agenda.application.dto.SelectedAgendaItemDto;
 import tcp.project.agenda.agenda.application.dto.VoteRequest;
@@ -56,6 +57,7 @@ public class AgendaFixture {
     public static final String BASIC_UPDATE_AGENDA_TITLE = "수정된 안건 제목";
     public static final String BASIC_UPDATE_AGENDA_CONTENT = "수정된 안건 내용";
     public static final String BASIC_UPDATE_AGENDA_TARGET = "회원";
+    public static final String BASIC_UPDATE_AGENDA_ITEM = "수정된 투표 항목 내용";
     public static final LocalDateTime BASIC_UPDATE_AGENDA_CLOSED_AT = LocalDateTime.now().plusDays(6);
 
     public static AgendaUpdateRequest getBasicVoteNotStartedAgendaUpdateRequest() {
@@ -68,5 +70,9 @@ public class AgendaFixture {
 
     public static AgendaUpdateRequest getInvalidClosedAtAgendaUpdateRequest() {
         return new AgendaUpdateRequest(BASIC_AGENDA_TITLE, BASIC_UPDATE_AGENDA_CONTENT, BASIC_UPDATE_AGENDA_TARGET, LocalDateTime.now());
+    }
+
+    public static AgendaItemUpdateRequest getBasicAgendaItemUpdateRequest() {
+        return new AgendaItemUpdateRequest(List.of(new AgendaItemDto(BASIC_UPDATE_AGENDA_ITEM)));
     }
 }

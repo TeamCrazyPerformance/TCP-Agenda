@@ -7,8 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
 import tcp.project.agenda.agenda.application.dto.AgendaItemDto;
+import tcp.project.agenda.agenda.application.dto.AgendaItemUpdateRequest;
 import tcp.project.agenda.agenda.application.dto.AgendaUpdateRequest;
 import tcp.project.agenda.agenda.application.validator.AgendaCreateValidator;
+import tcp.project.agenda.agenda.application.validator.AgendaItemUpdateValidator;
 import tcp.project.agenda.agenda.application.validator.AgendaUpdateValidator;
 import tcp.project.agenda.agenda.domain.Agenda;
 import tcp.project.agenda.agenda.domain.AgendaItem;
@@ -46,9 +48,9 @@ public class AgendaService {
         validateAgendaCreateRequest(request);
         Member member = findMember(memberId);
 
+        List<AgendaItem> agendaItems = getAgendaItems(request.getSelectList());
         Agenda agenda = Agenda.createAgendaFrom(member, request.getTitle(), request.getContent(), GradeType.from(request.getTarget()), request.getClosedAt());
-        List<AgendaItem> agendaItems = getAgendaItems(request.getSelectList(), agenda);
-        agenda.addAgendaItems(agendaItems);
+        agenda.updateAgendaItems(agendaItems);
 
         agendaRepository.save(agenda);
     }
@@ -61,9 +63,9 @@ public class AgendaService {
         }
     }
 
-    private List<AgendaItem> getAgendaItems(List<AgendaItemDto> selectItemList, Agenda agenda) {
+    private List<AgendaItem> getAgendaItems(List<AgendaItemDto> selectItemList) {
         return selectItemList.stream()
-                .map(agendaItemDto -> AgendaItem.createAgendaItem(agenda, agendaItemDto.getContent()))
+                .map(agendaItemDto -> AgendaItem.createAgendaItem(agendaItemDto.getContent()))
                 .collect(Collectors.toList());
     }
 
@@ -132,6 +134,24 @@ public class AgendaService {
 
     private void validateAgendaUpdateRequest(AgendaUpdateRequest request) {
         AgendaUpdateValidator validator = new AgendaUpdateValidator();
+        List<ValidationError> errors = validator.validate(request);
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
+    }
+
+    @Transactional
+    public void updateAgendaItems(Long memberId, Long agendaId, AgendaItemUpdateRequest request) {
+        validateAgendaItemUpdateRequest(request);
+        Agenda agenda = findAgenda(agendaId);
+        agenda.validateOwner(memberId);
+
+        List<AgendaItem> agendaItems = getAgendaItems(request.getSelectList());
+        agenda.updateAgendaItems(agendaItems);
+    }
+
+    private void validateAgendaItemUpdateRequest(AgendaItemUpdateRequest request) {
+        AgendaItemUpdateValidator validator = new AgendaItemUpdateValidator();
         List<ValidationError> errors = validator.validate(request);
         if (!errors.isEmpty()) {
             throw new ValidationException(errors);

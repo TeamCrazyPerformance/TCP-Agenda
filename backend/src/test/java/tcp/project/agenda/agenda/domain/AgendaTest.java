@@ -27,8 +27,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CLOSED_AT;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CONTENT;
+import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_ITEM1;
+import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_ITEM2;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_SELECTED_LIST_DTO;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_TITLE;
+import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_UPDATE_AGENDA_ITEM;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteNotStartedAgendaUpdateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteStartedAgendaUpdateRequest;
@@ -96,6 +99,48 @@ class AgendaTest {
         //when then
         assertThatThrownBy(() -> agenda.validateOwner(notMemberId))
             .isInstanceOf(NotAgendaOwnerException.class);
+    }
+
+    @Test
+    @DisplayName("투표 항목이 수정 되어야 함")
+    void updateAgendaItemsTest() throws Exception {
+        //given
+        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, grade.getGradeType(), BASIC_AGENDA_CLOSED_AT);
+        agenda.updateAgendaItems(List.of(AgendaItem.createAgendaItem(BASIC_AGENDA_ITEM1), AgendaItem.createAgendaItem(BASIC_AGENDA_ITEM2)));
+
+        //when
+        agenda.updateAgendaItems(List.of(AgendaItem.createAgendaItem(BASIC_UPDATE_AGENDA_ITEM)));
+
+        //then
+        assertThat(agenda.getAgendaItems()).hasSize(1);
+        assertThat(agenda.getAgendaItems().get(0).getContent()).isEqualTo(BASIC_UPDATE_AGENDA_ITEM);
+    }
+
+    @Test
+    @DisplayName("마감된 안건인 경우 투표 항목을 수정하면 예외가 발생해야 함")
+    void updateAgendaItemsTest_alreadyClosed() throws Exception {
+        //given
+        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, grade.getGradeType(), BASIC_AGENDA_CLOSED_AT);
+        agenda.updateAgendaItems(List.of(AgendaItem.createAgendaItem(BASIC_AGENDA_ITEM1), AgendaItem.createAgendaItem(BASIC_AGENDA_ITEM2)));
+        agenda.close();
+
+        //when then
+        assertThatThrownBy(() -> agenda.updateAgendaItems(List.of(AgendaItem.createAgendaItem(BASIC_UPDATE_AGENDA_ITEM))))
+                .isInstanceOf(AgendaAlreadyClosedException.class);
+    }
+
+    @Test
+    @DisplayName("투표가 시작된 안건인 경우 투표 항목을 수정하면 예외가 발생해야 함")
+    void updateAgendaItemsTest_alreadyVoteStarted() throws Exception {
+        //given
+        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, grade.getGradeType(), BASIC_AGENDA_CLOSED_AT);
+        AgendaItem agendaItem1 = AgendaItem.createAgendaItem(BASIC_AGENDA_ITEM1);
+        agenda.updateAgendaItems(List.of(agendaItem1, AgendaItem.createAgendaItem(BASIC_AGENDA_ITEM2)));
+        agenda.addVote(new Vote(member, agendaItem1, agenda));
+
+        //when then
+        assertThatThrownBy(() -> agenda.updateAgendaItems(List.of(AgendaItem.createAgendaItem(BASIC_UPDATE_AGENDA_ITEM))))
+                .isInstanceOf(InvalidUpdateAlreadyVoteStartedAgendaException.class);
     }
 
     @Test
@@ -196,8 +241,8 @@ class AgendaTest {
     void updateTest_voteStarted() throws Exception {
         //given
         Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, GradeType.REGULAR, BASIC_AGENDA_CLOSED_AT);
-        List<AgendaItem> agendaItemList = BASIC_AGENDA_SELECTED_LIST_DTO.stream().map(agendaItemDto -> new AgendaItem(agenda, agendaItemDto.getContent())).collect(Collectors.toList());
-        agenda.addAgendaItems(agendaItemList);
+        List<AgendaItem> agendaItemList = BASIC_AGENDA_SELECTED_LIST_DTO.stream().map(agendaItemDto -> new AgendaItem(agendaItemDto.getContent())).collect(Collectors.toList());
+        agenda.updateAgendaItems(agendaItemList);
         agenda.addVote(mock(Vote.class));
         AgendaUpdateRequest request = getBasicVoteStartedAgendaUpdateRequest();
 
@@ -220,8 +265,8 @@ class AgendaTest {
     void updateTest_invalidUpdateAlreadyStartedVoteAgenda() throws Exception {
         //given
         Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, GradeType.REGULAR, BASIC_AGENDA_CLOSED_AT);
-        List<AgendaItem> agendaItemList = BASIC_AGENDA_SELECTED_LIST_DTO.stream().map(agendaItemDto -> new AgendaItem(agenda, agendaItemDto.getContent())).collect(Collectors.toList());
-        agenda.addAgendaItems(agendaItemList);
+        List<AgendaItem> agendaItemList = BASIC_AGENDA_SELECTED_LIST_DTO.stream().map(agendaItemDto -> new AgendaItem(agendaItemDto.getContent())).collect(Collectors.toList());
+        agenda.updateAgendaItems(agendaItemList);
         agenda.addVote(mock(Vote.class));
         AgendaUpdateRequest request = getBasicVoteNotStartedAgendaUpdateRequest();
 

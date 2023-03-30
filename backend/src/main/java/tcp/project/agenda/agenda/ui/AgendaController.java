@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tcp.project.agenda.agenda.application.AgendaService;
 import tcp.project.agenda.agenda.application.VoteService;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
+import tcp.project.agenda.agenda.application.dto.AgendaItemUpdateRequest;
 import tcp.project.agenda.agenda.application.dto.AgendaUpdateRequest;
 import tcp.project.agenda.agenda.application.dto.VoteRequest;
 import tcp.project.agenda.agenda.ui.dto.AgendaListResponse;
@@ -62,6 +63,12 @@ public class AgendaController {
     @PutMapping("/{agendaId}")
     public ResponseEntity<Void> updateAgenda(@Authenticated Long memberId, @PathVariable Long agendaId, @RequestBody AgendaUpdateRequest request) {
         agendaService.updateAgenda(memberId, agendaId, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{agendaId}/items")
+    public ResponseEntity<Void> updateAgendaItems(@Authenticated Long memberId, @PathVariable Long agendaId, @RequestBody AgendaItemUpdateRequest request) {
+        agendaService.updateAgendaItems(memberId, agendaId, request);
         return ResponseEntity.ok().build();
     }
 

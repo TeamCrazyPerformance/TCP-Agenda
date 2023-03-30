@@ -33,13 +33,16 @@ public class AgendaItem {
     @OneToMany(mappedBy = "agendaItem")
     private List<Vote> votes;
 
-    public AgendaItem(Agenda agenda, String content) {
-        this.agenda = agenda;
+    public AgendaItem(String content) {
         this.content = content;
     }
 
-    public static AgendaItem createAgendaItem(Agenda agenda, String content) {
-        return new AgendaItem(agenda, content);
+    public static AgendaItem createAgendaItem(String content) {
+        return new AgendaItem(content);
+    }
+
+    public void setAgenda(Agenda agenda) {
+        this.agenda = agenda;
     }
 
     public int getVoteCount() {
