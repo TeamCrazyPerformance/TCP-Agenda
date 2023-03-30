@@ -2,6 +2,7 @@ package tcp.project.agenda.common.fixture;
 
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
 import tcp.project.agenda.agenda.application.dto.AgendaItemDto;
+import tcp.project.agenda.agenda.application.dto.AgendaItemUpdateRequest;
 import tcp.project.agenda.agenda.application.dto.AgendaUpdateRequest;
 import tcp.project.agenda.agenda.application.dto.SelectedAgendaItemDto;
 import tcp.project.agenda.agenda.application.dto.VoteRequest;
@@ -69,5 +70,9 @@ public class AgendaFixture {
 
     public static AgendaUpdateRequest getInvalidClosedAtAgendaUpdateRequest() {
         return new AgendaUpdateRequest(BASIC_AGENDA_TITLE, BASIC_UPDATE_AGENDA_CONTENT, BASIC_UPDATE_AGENDA_TARGET, LocalDateTime.now());
+    }
+
+    public static AgendaItemUpdateRequest getBasicAgendaItemUpdateRequest() {
+        return new AgendaItemUpdateRequest(List.of(new AgendaItemDto(BASIC_UPDATE_AGENDA_ITEM)));
     }
 }
