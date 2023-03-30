@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaListResponse;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaResponse;
-import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicNotVoteStartedAgendaUpdateRequest;
+import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteNotStartedAgendaUpdateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteStartedAgendaUpdateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaCreateRequest;
@@ -341,7 +341,7 @@ class AgendaControllerTest extends MockControllerTest {
     @DisplayName("아직 투표가 시작되지 않은 안건일 경우, '제목, 내용, 마감 시간, 대상, 투표 항목'이 바뀔 수 있음")
     void updateAgendaTest_voteNotStarted() throws Exception {
         //given
-        AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
+        AgendaUpdateRequest request = getBasicVoteNotStartedAgendaUpdateRequest();
 
         //when then
         mockMvc.perform(put("/agenda/1")
@@ -355,7 +355,7 @@ class AgendaControllerTest extends MockControllerTest {
     @DisplayName("안건이 없을 경우 경우 예외가 발생해야 함")
     void updateTest_agendaNotFound() throws Exception {
         //given
-        AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
+        AgendaUpdateRequest request = getBasicVoteNotStartedAgendaUpdateRequest();
         doThrow(new AgendaNotFoundException(1L))
                 .when(agendaService)
                 .updateAgenda(any(), any(), any());
@@ -372,7 +372,7 @@ class AgendaControllerTest extends MockControllerTest {
     @DisplayName("안건 작성자가 아닐 경우 경우 예외가 발생해야 함")
     void updateTest_notAgendaOwner() throws Exception {
         //given
-        AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
+        AgendaUpdateRequest request = getBasicVoteNotStartedAgendaUpdateRequest();
         doThrow(new NotAgendaOwnerException(1L, 1L))
                 .when(agendaService)
                 .updateAgenda(any(), any(), any());
@@ -389,7 +389,7 @@ class AgendaControllerTest extends MockControllerTest {
     @DisplayName("마감 시간이 시작 시간보다 빠른 경우 예외가 발생해야 함")
     void updateTest_invalidClosedAt() throws Exception {
         //given
-        AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
+        AgendaUpdateRequest request = getBasicVoteNotStartedAgendaUpdateRequest();
         doThrow(new InvalidClosedAgendaTimeException())
                 .when(agendaService)
                 .updateAgenda(any(), any(), any());
@@ -406,7 +406,7 @@ class AgendaControllerTest extends MockControllerTest {
     @DisplayName("이미 종료된 안건인 경우 예외가 발생해야 함")
     void updateTest_alreadyClosed() throws Exception {
         //given
-        AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
+        AgendaUpdateRequest request = getBasicVoteNotStartedAgendaUpdateRequest();
         doThrow(new AgendaAlreadyClosedException())
                 .when(agendaService)
                 .updateAgenda(any(), any(), any());

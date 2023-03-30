@@ -16,7 +16,6 @@ public class AgendaUpdateRequest {
     private String title;
     private String content;
     private String target;
-    private List<AgendaItemDto> selectList;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime closedAt;
 }

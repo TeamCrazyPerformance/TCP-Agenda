@@ -1,7 +1,6 @@
 package tcp.project.agenda.agenda.application.validator;
 
 import org.springframework.util.StringUtils;
-import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
 import tcp.project.agenda.agenda.application.dto.AgendaUpdateRequest;
 import tcp.project.agenda.common.exception.ValidationError;
 
@@ -21,9 +20,6 @@ public class AgendaUpdateValidator {
         }
         if (request.getClosedAt() == null) {
             errors.add(new ValidationError("closedAt", REQUIRED));
-        }
-        if (request.getSelectList() == null) {
-            errors.add(new ValidationError("selectList", REQUIRED));
         }
         return errors;
     }
