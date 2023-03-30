@@ -127,8 +127,7 @@ public class AgendaService {
         Agenda agenda = findAgenda(agendaId);
         agenda.validateOwner(memberId);
 
-        List<AgendaItem> agendaItems = getAgendaItems(request.getSelectList(), agenda);
-        agenda.update(request.getTitle(), request.getContent(), request.getClosedAt(), request.getTarget(), agendaItems);
+        agenda.update(request.getTitle(), request.getContent(), request.getClosedAt(), request.getTarget());
     }
 
     private void validateAgendaUpdateRequest(AgendaUpdateRequest request) {

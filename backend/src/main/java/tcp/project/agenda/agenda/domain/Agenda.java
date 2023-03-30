@@ -111,38 +111,26 @@ public class Agenda extends BaseEntity {
                 .orElseThrow(NotTargetMemberException::new);
     }
 
-    public void update(String title, String content, LocalDateTime closedAt, String target, List<AgendaItem> agendaItems) {
+    public void update(String title, String content, LocalDateTime closedAt, String target) {
         validateAlreadyClosed();
         validateClosedAt(closedAt);
         if (isVoteStarted()) {
-            validateUpdatingAlreadyStartedVote(content, target, agendaItems);
-            agendaItems = List.copyOf(this.agendaItems);
+            validateUpdatingAlreadyStartedVote(content, target);
         }
         this.title = title;
         this.content = content;
         this.closedAt = closedAt;
         this.target = GradeType.from(target);
-        this.agendaItems.clear();
-        this.agendaItems.addAll(agendaItems);
     }
 
-    private void validateUpdatingAlreadyStartedVote(String content, String target, List<AgendaItem> agendaItems) {
-        if (!(isAgendaItemsNotChanged(agendaItems) && isAgendaInfoNotChanged(content, target))) {
+    private void validateUpdatingAlreadyStartedVote(String content, String target) {
+        if (!isAgendaInfoNotChanged(content, target)) {
             throw new InvalidUpdateAlreadyVoteStartedAgendaException();
         }
     }
 
     private boolean isAgendaInfoNotChanged(String content, String target) {
         return this.content.equals(content) && this.target.equals(GradeType.from(target));
-    }
-
-    private boolean isAgendaItemsNotChanged(List<AgendaItem> agendaItems) {
-        List<String> agendaItemContents = this.agendaItems.stream()
-                .map(AgendaItem::getContent)
-                .toList();
-        boolean isExistingContents = agendaItems.stream()
-                .anyMatch(agendaItem -> agendaItemContents.contains(agendaItem.getContent()));
-        return this.agendaItems.size() == agendaItems.size() && isExistingContents;
     }
 
     private boolean isVoteStarted() {

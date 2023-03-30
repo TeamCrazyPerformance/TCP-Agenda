@@ -316,13 +316,11 @@ class AgendaServiceTest extends ApplicationServiceTest {
 
         //then
         Agenda agenda = agendaRepository.findAll().get(0);
-        List<AgendaItem> agendaItems = agendaItemRepository.findAll();
         assertAll(
                 () -> assertThat(agenda.getTitle()).isEqualTo(request.getTitle()),
                 () -> assertThat(agenda.getContent()).isEqualTo(request.getContent()),
                 () -> assertThat(agenda.getClosedAt()).isEqualTo(request.getClosedAt()),
-                () -> assertThat(agenda.getTarget()).isEqualTo(GradeType.from(request.getTarget())),
-                () -> assertThat(agendaItems).hasSize(3)
+                () -> assertThat(agenda.getTarget()).isEqualTo(GradeType.from(request.getTarget()))
         );
     }
 

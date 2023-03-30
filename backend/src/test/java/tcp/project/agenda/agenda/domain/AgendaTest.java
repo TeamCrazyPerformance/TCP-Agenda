@@ -153,21 +153,16 @@ class AgendaTest {
         //given
         Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, GradeType.REGULAR, BASIC_AGENDA_CLOSED_AT);
         AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
-        List<AgendaItem> agendaItems = request.getSelectList().stream()
-                .map(agendaItemDto -> AgendaItem.createAgendaItem(agenda, agendaItemDto.getContent()))
-                .toList();
 
         //when
-        agenda.update(request.getTitle(), request.getContent(), request.getClosedAt(), request.getTarget(), agendaItems);
+        agenda.update(request.getTitle(), request.getContent(), request.getClosedAt(), request.getTarget());
 
         //then
-        List<AgendaItem> changedAgendaItems = agenda.getAgendaItems();
         assertAll(
                 () -> assertThat(agenda.getTitle()).isEqualTo(request.getTitle()),
                 () -> assertThat(agenda.getContent()).isEqualTo(request.getContent()),
                 () -> assertThat(agenda.getClosedAt()).isEqualTo(request.getClosedAt()),
-                () -> assertThat(agenda.getTarget()).isEqualTo(GradeType.from(request.getTarget())),
-                () -> assertThat(changedAgendaItems).hasSize(3)
+                () -> assertThat(agenda.getTarget()).isEqualTo(GradeType.from(request.getTarget()))
         );
     }
 
@@ -177,12 +172,9 @@ class AgendaTest {
         //given
         Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, GradeType.REGULAR, BASIC_AGENDA_CLOSED_AT);
         AgendaUpdateRequest request = getInvalidClosedAtAgendaUpdateRequest();
-        List<AgendaItem> agendaItems = request.getSelectList().stream()
-                .map(agendaItemDto -> AgendaItem.createAgendaItem(agenda, agendaItemDto.getContent()))
-                .toList();
 
         //when then
-        assertThatThrownBy(() -> agenda.update(request.getTitle(), request.getContent(), request.getClosedAt(), request.getTarget(), agendaItems))
+        assertThatThrownBy(() -> agenda.update(request.getTitle(), request.getContent(), request.getClosedAt(), request.getTarget()))
                 .isInstanceOf(InvalidClosedAgendaTimeException.class);
     }
 
@@ -193,12 +185,9 @@ class AgendaTest {
         Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, GradeType.REGULAR, BASIC_AGENDA_CLOSED_AT);
         agenda.close();
         AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
-        List<AgendaItem> agendaItems = request.getSelectList().stream()
-                .map(agendaItemDto -> AgendaItem.createAgendaItem(agenda, agendaItemDto.getContent()))
-                .toList();
 
         //when then
-        assertThatThrownBy(() -> agenda.update(request.getTitle(), request.getContent(), request.getClosedAt(), request.getTarget(), agendaItems))
+        assertThatThrownBy(() -> agenda.update(request.getTitle(), request.getContent(), request.getClosedAt(), request.getTarget()))
                 .isInstanceOf(AgendaAlreadyClosedException.class);
     }
 
@@ -211,12 +200,9 @@ class AgendaTest {
         agenda.addAgendaItems(agendaItemList);
         agenda.addVote(mock(Vote.class));
         AgendaUpdateRequest request = getBasicVoteStartedAgendaUpdateRequest();
-        List<AgendaItem> agendaItems = request.getSelectList().stream()
-                .map(agendaItemDto -> AgendaItem.createAgendaItem(agenda, agendaItemDto.getContent()))
-                .toList();
 
         //when
-        agenda.update(request.getTitle(), request.getContent(), request.getClosedAt(), request.getTarget(), agendaItems);
+        agenda.update(request.getTitle(), request.getContent(), request.getClosedAt(), request.getTarget());
 
         //then
         List<AgendaItem> changedAgendaItems = agenda.getAgendaItems();
@@ -230,7 +216,7 @@ class AgendaTest {
     }
 
     @Test
-    @DisplayName("이미 투표가 시작된 안건인 경우에 내용, 대상, 투표 항목을 수정하려고 하면 예외가 발생해야 함")
+    @DisplayName("이미 투표가 시작된 안건인 경우에 내용, 대상을 수정하려고 하면 예외가 발생해야 함")
     void updateTest_invalidUpdateAlreadyStartedVoteAgenda() throws Exception {
         //given
         Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, GradeType.REGULAR, BASIC_AGENDA_CLOSED_AT);
@@ -238,12 +224,9 @@ class AgendaTest {
         agenda.addAgendaItems(agendaItemList);
         agenda.addVote(mock(Vote.class));
         AgendaUpdateRequest request = getBasicNotVoteStartedAgendaUpdateRequest();
-        List<AgendaItem> agendaItems = request.getSelectList().stream()
-                .map(agendaItemDto -> AgendaItem.createAgendaItem(agenda, agendaItemDto.getContent()))
-                .toList();
 
         //when then
-        assertThatThrownBy(() -> agenda.update(request.getTitle(), request.getContent(), request.getClosedAt(), request.getTarget(), agendaItems))
+        assertThatThrownBy(() -> agenda.update(request.getTitle(), request.getContent(), request.getClosedAt(), request.getTarget()))
                 .isInstanceOf(InvalidUpdateAlreadyVoteStartedAgendaException.class);
     }
 }
