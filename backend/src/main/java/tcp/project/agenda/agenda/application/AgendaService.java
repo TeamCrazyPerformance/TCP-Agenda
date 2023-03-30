@@ -48,8 +48,8 @@ public class AgendaService {
         validateAgendaCreateRequest(request);
         Member member = findMember(memberId);
 
+        List<AgendaItem> agendaItems = getAgendaItems(request.getSelectList());
         Agenda agenda = Agenda.createAgendaFrom(member, request.getTitle(), request.getContent(), GradeType.from(request.getTarget()), request.getClosedAt());
-        List<AgendaItem> agendaItems = getAgendaItems(request.getSelectList(), agenda);
         agenda.updateAgendaItems(agendaItems);
 
         agendaRepository.save(agenda);
@@ -63,9 +63,9 @@ public class AgendaService {
         }
     }
 
-    private List<AgendaItem> getAgendaItems(List<AgendaItemDto> selectItemList, Agenda agenda) {
+    private List<AgendaItem> getAgendaItems(List<AgendaItemDto> selectItemList) {
         return selectItemList.stream()
-                .map(agendaItemDto -> AgendaItem.createAgendaItem(agenda, agendaItemDto.getContent()))
+                .map(agendaItemDto -> AgendaItem.createAgendaItem(agendaItemDto.getContent()))
                 .collect(Collectors.toList());
     }
 
@@ -146,7 +146,7 @@ public class AgendaService {
         Agenda agenda = findAgenda(agendaId);
         agenda.validateOwner(memberId);
 
-        List<AgendaItem> agendaItems = getAgendaItems(request.getSelectList(), agenda);
+        List<AgendaItem> agendaItems = getAgendaItems(request.getSelectList());
         agenda.updateAgendaItems(agendaItems);
     }
 
