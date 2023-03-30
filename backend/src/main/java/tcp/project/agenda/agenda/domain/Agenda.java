@@ -84,9 +84,21 @@ public class Agenda extends BaseEntity {
     }
 
     public void updateAgendaItems(List<AgendaItem> agendaItems) {
+        validateAlreadyClosed();
+        validateAlreadyVoteStarted();
         this.agendaItems.clear();
-        agendaItems.forEach(agendaItem -> agendaItem.setAgenda(this));
         this.agendaItems.addAll(agendaItems);
+        agendaItems.forEach(agendaItem -> agendaItem.setAgenda(this));
+    }
+
+    private void validateAlreadyVoteStarted() {
+        if (isVoteStarted()) {
+            throw new InvalidUpdateAlreadyVoteStartedAgendaException();
+        }
+    }
+
+    private boolean isVoteStarted() {
+        return !votes.isEmpty();
     }
 
     public void validateOwner(Long memberId) {
@@ -133,10 +145,6 @@ public class Agenda extends BaseEntity {
 
     private <T> boolean isChanged(T original, T current) {
         return !original.equals(current);
-    }
-
-    private boolean isVoteStarted() {
-        return !votes.isEmpty();
     }
 
     public void addVote(Vote vote) {
