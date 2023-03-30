@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import tcp.project.agenda.agenda.application.dto.AgendaCreateRequest;
+import tcp.project.agenda.agenda.application.dto.AgendaItemUpdateRequest;
 import tcp.project.agenda.agenda.application.dto.AgendaUpdateRequest;
 import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
 import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
@@ -19,9 +20,6 @@ import tcp.project.agenda.agenda.ui.dto.AgendaListResponse;
 import tcp.project.agenda.agenda.ui.dto.AgendaResponse;
 import tcp.project.agenda.common.support.MockControllerTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
@@ -33,6 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
+import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaItemUpdateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaListResponse;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaResponse;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteNotStartedAgendaUpdateRequest;
@@ -444,6 +443,73 @@ class AgendaControllerTest extends MockControllerTest {
 
         //when then
         mockMvc.perform(put("/agenda/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("투표 항목이 수정 되어야 함")
+    void updateAgendaItemsTest() throws Exception {
+        //given
+        AgendaItemUpdateRequest request = getBasicAgendaItemUpdateRequest();
+        doNothing().when(agendaService)
+                .updateAgendaItems(any(), any(), any());
+
+        //when then
+        mockMvc.perform(put("/agenda/1/items")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("안건 작석자가 아닌 경우 투표 항목을 수정하면 예외가 발생해야 함")
+    void updateAgendaItemsTest_notAgendaOwner() throws Exception {
+        //given
+        AgendaItemUpdateRequest request = getBasicAgendaItemUpdateRequest();
+        doThrow(new NotAgendaOwnerException(1L, 1L))
+                .when(agendaService)
+                .updateAgendaItems(any(), any(), any());
+
+        //when then
+        mockMvc.perform(put("/agenda/1/items")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("마감된 안건인 경우 투표 항목을 수정하면 예외가 발생해야 함")
+    void updateAgendaItemsTest_alreadyClosed() throws Exception {
+        //given
+        AgendaItemUpdateRequest request = getBasicAgendaItemUpdateRequest();
+        doThrow(new AgendaAlreadyClosedException())
+                .when(agendaService)
+                .updateAgendaItems(any(), any(), any());
+
+        //when then
+        mockMvc.perform(put("/agenda/1/items")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("투표가 시작된 안건인 경우 투표 항목을 수정하면 예외가 발생해야 함")
+    void updateAgendaItemsTest_alreadyVoteStarted() throws Exception {
+        //given
+        AgendaItemUpdateRequest request = getBasicAgendaItemUpdateRequest();
+        doThrow(new InvalidUpdateAlreadyVoteStartedAgendaException())
+                .when(agendaService)
+                .updateAgendaItems(any(), any(), any());
+
+        //when then
+        mockMvc.perform(put("/agenda/1/items")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(request)))
