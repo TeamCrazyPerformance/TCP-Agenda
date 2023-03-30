@@ -197,7 +197,7 @@ class AgendaTest {
         //given
         Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, GradeType.REGULAR, BASIC_AGENDA_CLOSED_AT);
         List<AgendaItem> agendaItemList = BASIC_AGENDA_SELECTED_LIST_DTO.stream().map(agendaItemDto -> new AgendaItem(agenda, agendaItemDto.getContent())).collect(Collectors.toList());
-        agenda.addAgendaItems(agendaItemList);
+        agenda.updateAgendaItems(agendaItemList);
         agenda.addVote(mock(Vote.class));
         AgendaUpdateRequest request = getBasicVoteStartedAgendaUpdateRequest();
 
@@ -221,7 +221,7 @@ class AgendaTest {
         //given
         Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, GradeType.REGULAR, BASIC_AGENDA_CLOSED_AT);
         List<AgendaItem> agendaItemList = BASIC_AGENDA_SELECTED_LIST_DTO.stream().map(agendaItemDto -> new AgendaItem(agenda, agendaItemDto.getContent())).collect(Collectors.toList());
-        agenda.addAgendaItems(agendaItemList);
+        agenda.updateAgendaItems(agendaItemList);
         agenda.addVote(mock(Vote.class));
         AgendaUpdateRequest request = getBasicVoteNotStartedAgendaUpdateRequest();
 

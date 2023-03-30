@@ -42,6 +42,10 @@ public class AgendaItem {
         return new AgendaItem(agenda, content);
     }
 
+    public void setAgenda(Agenda agenda) {
+        this.agenda = agenda;
+    }
+
     public int getVoteCount() {
         return votes.size();
     }

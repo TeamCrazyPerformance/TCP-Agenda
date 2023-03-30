@@ -83,7 +83,9 @@ public class Agenda extends BaseEntity {
         }
     }
 
-    public void addAgendaItems(List<AgendaItem> agendaItems) {
+    public void updateAgendaItems(List<AgendaItem> agendaItems) {
+        this.agendaItems.clear();
+        agendaItems.forEach(agendaItem -> agendaItem.setAgenda(this));
         this.agendaItems.addAll(agendaItems);
     }
 

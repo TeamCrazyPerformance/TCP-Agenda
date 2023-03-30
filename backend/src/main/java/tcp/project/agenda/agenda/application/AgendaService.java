@@ -48,7 +48,7 @@ public class AgendaService {
 
         Agenda agenda = Agenda.createAgendaFrom(member, request.getTitle(), request.getContent(), GradeType.from(request.getTarget()), request.getClosedAt());
         List<AgendaItem> agendaItems = getAgendaItems(request.getSelectList(), agenda);
-        agenda.addAgendaItems(agendaItems);
+        agenda.updateAgendaItems(agendaItems);
 
         agendaRepository.save(agenda);
     }
