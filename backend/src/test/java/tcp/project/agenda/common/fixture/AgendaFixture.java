@@ -56,6 +56,7 @@ public class AgendaFixture {
     public static final String BASIC_UPDATE_AGENDA_TITLE = "수정된 안건 제목";
     public static final String BASIC_UPDATE_AGENDA_CONTENT = "수정된 안건 내용";
     public static final String BASIC_UPDATE_AGENDA_TARGET = "회원";
+    public static final String BASIC_UPDATE_AGENDA_ITEM = "수정된 투표 항목 내용";
     public static final LocalDateTime BASIC_UPDATE_AGENDA_CLOSED_AT = LocalDateTime.now().plusDays(6);
 
     public static AgendaUpdateRequest getBasicVoteNotStartedAgendaUpdateRequest() {
