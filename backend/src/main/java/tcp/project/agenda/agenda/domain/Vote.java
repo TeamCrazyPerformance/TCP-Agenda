@@ -35,7 +35,7 @@ public class Vote {
     @JoinColumn(name = "agenda_id")
     private Agenda agenda;
 
-    public Vote(Member member, AgendaItem agendaItem, Agenda agenda) {
+    private Vote(Member member, AgendaItem agendaItem, Agenda agenda) {
         this.member = member;
         this.agendaItem = agendaItem;
         this.agenda = agenda;
@@ -44,6 +44,7 @@ public class Vote {
     public static Vote createVote(Member member, AgendaItem agendaItem, Agenda agenda) {
         Vote vote = new Vote(member, agendaItem, agenda);
         agenda.addVote(vote);
+        agendaItem.addVote(vote);
         return vote;
     }
 }

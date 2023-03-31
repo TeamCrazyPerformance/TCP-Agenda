@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -31,7 +32,7 @@ public class AgendaItem {
     private String content;
 
     @OneToMany(mappedBy = "agendaItem")
-    private List<Vote> votes;
+    private List<Vote> votes = new ArrayList<>();
 
     public AgendaItem(String content) {
         this.content = content;
@@ -47,5 +48,9 @@ public class AgendaItem {
 
     public int getVoteCount() {
         return votes.size();
+    }
+
+    public void addVote(Vote vote) {
+        votes.add(vote);
     }
 }
