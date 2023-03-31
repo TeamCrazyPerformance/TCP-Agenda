@@ -51,7 +51,18 @@ public class AgendaFixture {
     }
 
     public static AgendaResponse getBasicAgendaResponse() {
-        return new AgendaResponse(1L, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, BASIC_AGENDA_TARGET, 0, 30, List.of(), LocalDateTime.now(), LocalDateTime.now());
+        return AgendaResponse.builder()
+                .id(1L)
+                .title(BASIC_AGENDA_TITLE)
+                .content(BASIC_AGENDA_CONTENT)
+                .target(BASIC_AGENDA_TARGET)
+                .votedMember(0)
+                .totalMember(30)
+                .open(true)
+                .selectList(List.of())
+                .createdAt(LocalDateTime.now())
+                .closedAt(LocalDateTime.now())
+                .build();
     }
 
     public static final String BASIC_UPDATE_AGENDA_TITLE = "수정된 안건 제목";
