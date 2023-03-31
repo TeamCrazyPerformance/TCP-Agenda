@@ -88,7 +88,7 @@ public class Agenda extends BaseEntity {
         validateAlreadyVoteStarted();
         this.agendaItems.clear();
         this.agendaItems.addAll(agendaItems);
-        agendaItems.forEach(agendaItem -> agendaItem.setAgenda(this));
+        agendaItems.forEach(agendaItem -> agendaItem.mappingAgenda(this));
     }
 
     private void validateAlreadyVoteStarted() {

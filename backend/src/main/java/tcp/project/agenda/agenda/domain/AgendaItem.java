@@ -41,7 +41,7 @@ public class AgendaItem {
         return new AgendaItem(content);
     }
 
-    public void setAgenda(Agenda agenda) {
+    public void mappingAgenda(Agenda agenda) {
         this.agenda = agenda;
     }
 
