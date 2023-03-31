@@ -42,6 +42,8 @@ public class Vote {
     }
 
     public static Vote createVote(Member member, AgendaItem agendaItem, Agenda agenda) {
-        return new Vote(member, agendaItem, agenda);
+        Vote vote = new Vote(member, agendaItem, agenda);
+        agenda.addVote(vote);
+        return vote;
     }
 }
