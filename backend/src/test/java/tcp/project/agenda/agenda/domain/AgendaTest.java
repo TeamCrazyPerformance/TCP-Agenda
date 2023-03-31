@@ -136,7 +136,7 @@ class AgendaTest {
         Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, grade.getGradeType(), BASIC_AGENDA_CLOSED_AT);
         AgendaItem agendaItem1 = AgendaItem.createAgendaItem(BASIC_AGENDA_ITEM1);
         agenda.updateAgendaItems(List.of(agendaItem1, AgendaItem.createAgendaItem(BASIC_AGENDA_ITEM2)));
-        agenda.addVote(new Vote(member, agendaItem1, agenda));
+        Vote.createVote(member, agendaItem1, agenda);
 
         //when then
         assertThatThrownBy(() -> agenda.updateAgendaItems(List.of(AgendaItem.createAgendaItem(BASIC_UPDATE_AGENDA_ITEM))))
