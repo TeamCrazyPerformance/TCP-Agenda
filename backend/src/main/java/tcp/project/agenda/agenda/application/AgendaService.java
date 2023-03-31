@@ -70,7 +70,7 @@ public class AgendaService {
     }
 
     public AgendaListResponse getAgendaList(Pageable pageable) {
-        Slice<Agenda> agendaPage = agendaRepository.findAll(pageable);
+        Slice<Agenda> agendaPage = agendaRepository.findSliceBy(pageable);
         List<AgendaDto> agendaList = getAgendaDtoList(agendaPage);
         return new AgendaListResponse(agendaList, agendaPage.getNumber(), agendaPage.hasNext());
     }
