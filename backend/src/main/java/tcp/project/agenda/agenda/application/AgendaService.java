@@ -117,10 +117,8 @@ public class AgendaService {
         Agenda agenda = findAgenda(agendaId);
         agenda.validateOwner(memberId);
 
-        List<Vote> votes = voteRepository.findByAgendaId(agendaId);
-        if (!votes.isEmpty()) {
-            voteRepository.deleteAllInBatch(votes);
-        }
+        voteRepository.deleteByAgendaId(agendaId);
+        agendaItemRepository.deleteByAgendaId(agendaId);
         agendaRepository.delete(agenda);
     }
 

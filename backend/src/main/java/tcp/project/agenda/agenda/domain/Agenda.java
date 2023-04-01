@@ -57,7 +57,7 @@ public class Agenda extends BaseEntity {
     @Column(name = "is_closed")
     private boolean closed;
 
-    @OneToMany(mappedBy = "agenda", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "agenda", cascade = CascadeType.PERSIST)
     private final List<AgendaItem> agendaItems = new ArrayList<>();
 
     @OneToMany(mappedBy = "agenda")

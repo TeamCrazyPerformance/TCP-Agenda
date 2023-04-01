@@ -10,7 +10,6 @@ import java.util.List;
 
 @Repository
 public interface AgendaItemRepository extends JpaRepository<AgendaItem, Long> {
-    List<AgendaItem> findByIdIn(List<Long> idList);
 
     @Modifying(flushAutomatically = true)
     @Query("delete from AgendaItem ai where ai.agenda.id = :agendaId")
