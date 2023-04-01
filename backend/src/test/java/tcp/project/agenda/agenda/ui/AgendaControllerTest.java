@@ -231,7 +231,7 @@ class AgendaControllerTest extends MockControllerTest {
     @DisplayName("없는 투표 항목인 경우 400을 응답해야 함")
     void voteTest_agendaItemNotFound() throws Exception {
         //given
-        doThrow(new AgendaItemNotFoundException(1L))
+        doThrow(new AgendaItemNotFoundException())
                 .when(voteService)
                 .vote(any(), any(), any());
 

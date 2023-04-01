@@ -24,7 +24,7 @@ import tcp.project.agenda.agenda.ui.dto.AgendaListResponse;
 import tcp.project.agenda.agenda.ui.dto.AgendaResponse;
 import tcp.project.agenda.agenda.ui.dto.SelectItemDto;
 import tcp.project.agenda.common.exception.ValidationException;
-import tcp.project.agenda.common.support.ApplicationServiceTest;
+import tcp.project.agenda.common.support.ServiceTest;
 import tcp.project.agenda.member.domain.GradeType;
 
 import java.util.List;
@@ -45,7 +45,7 @@ import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidAgendaCr
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidClosedAtAgendaUpdateRequest;
 
-class AgendaServiceTest extends ApplicationServiceTest {
+class AgendaServiceTest extends ServiceTest {
 
     @Autowired
     AgendaService agendaService;

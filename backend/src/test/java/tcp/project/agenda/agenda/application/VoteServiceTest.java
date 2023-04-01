@@ -12,7 +12,7 @@ import tcp.project.agenda.agenda.exception.AlreadyVoteException;
 import tcp.project.agenda.agenda.exception.NotTargetMemberException;
 import tcp.project.agenda.auth.exception.MemberNotFoundException;
 import tcp.project.agenda.common.exception.ValidationException;
-import tcp.project.agenda.common.support.ApplicationServiceTest;
+import tcp.project.agenda.common.support.ServiceTest;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteReques
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidVoteRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getNotExistSelectItemVoteRequest;
 
-class VoteServiceTest extends ApplicationServiceTest {
+class VoteServiceTest extends ServiceTest {
 
     @Autowired
     VoteService voteService;

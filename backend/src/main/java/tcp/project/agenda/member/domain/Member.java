@@ -42,9 +42,10 @@ public class Member extends BaseEntity {
         return this.password.equals(password);
     }
 
-    public List<Grade> getGrades() {
+    public List<GradeType> getGrades() {
         return grades.stream()
                 .map(MemberGrade::getGrade)
+                .map(Grade::getGradeType)
                 .collect(Collectors.toList());
     }
 }
