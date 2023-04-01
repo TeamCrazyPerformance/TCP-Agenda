@@ -228,7 +228,7 @@ class AgendaServiceTest extends ApplicationServiceTest {
         voteService.vote(executiveRegular.getId(), agendaId, getBasicVoteRequest());
 
         //when
-        AgendaResponse response = agendaService.getAgenda(agendaId);
+        AgendaResponse response = agendaService.getAgenda(regular.getId(), agendaId);
 
         //then
         Agenda agenda = agendaRepository.findAll().get(0);
@@ -242,6 +242,7 @@ class AgendaServiceTest extends ApplicationServiceTest {
                 () -> assertThat(response.getVotedMember()).isEqualTo(2),
                 () -> assertThat(response.getVotedMember()).isEqualTo(2),
                 () -> assertThat(response.isOpen()).isTrue(),
+                () -> assertThat(response.isVoted()).isTrue(),
                 () -> assertThat(selectList.get(0).getId()).isEqualTo(1),
                 () -> assertThat(selectList.get(0).getContent()).isEqualTo(BASIC_AGENDA_ITEM1),
                 () -> assertThat(selectList.get(0).getVoteCount()).isEqualTo(2),
@@ -257,7 +258,7 @@ class AgendaServiceTest extends ApplicationServiceTest {
         //given
 
         //when then
-        assertThatThrownBy(() -> agendaService.getAgenda(999L))
+        assertThatThrownBy(() -> agendaService.getAgenda(regular.getId(), 999L))
                 .isInstanceOf(AgendaNotFoundException.class);
     }
 
