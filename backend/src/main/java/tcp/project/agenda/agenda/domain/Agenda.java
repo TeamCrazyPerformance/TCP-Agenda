@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tcp.project.agenda.agenda.exception.AgendaAlreadyClosedException;
+import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
 import tcp.project.agenda.agenda.exception.InvalidClosedAgendaTimeException;
 import tcp.project.agenda.agenda.exception.InvalidUpdateAlreadyVoteStartedAgendaException;
 import tcp.project.agenda.agenda.exception.NotAgendaOwnerException;
@@ -111,17 +112,10 @@ public class Agenda extends BaseEntity {
         this.closed = true;
     }
 
-    public void validateAlreadyClosed() {
+    private void validateAlreadyClosed() {
         if (isClosed()) {
             throw new AgendaAlreadyClosedException();
         }
-    }
-
-    public void validateIsTargetGrade(List<Grade> grades) {
-        grades.stream()
-                .filter(grade -> this.target.equals(grade.getGradeType()))
-                .findAny()
-                .orElseThrow(NotTargetMemberException::new);
     }
 
     public void update(String title, String content, LocalDateTime closedAt, String target) {
@@ -144,6 +138,32 @@ public class Agenda extends BaseEntity {
 
     private <T> boolean isChanged(T original, T current) {
         return !original.equals(current);
+    }
+
+    public List<Vote> vote(Member member, List<Long> selectItemIdList) {
+        validateAlreadyClosed();
+        validateIsTargetGrade(member.getGrades());
+        validateExistAgendaItem(selectItemIdList);
+
+        return agendaItems.stream()
+                .filter(agendaItem -> selectItemIdList.contains(agendaItem.getId()))
+                .map(selectAgendaItem -> Vote.createVote(member, selectAgendaItem, this))
+                .toList();
+    }
+
+    private void validateIsTargetGrade(List<GradeType> grades) {
+        grades.stream()
+                .filter(grade -> this.target.equals(grade))
+                .findAny()
+                .orElseThrow(NotTargetMemberException::new);
+    }
+
+    private void validateExistAgendaItem(List<Long> selectItemIdList) {
+        boolean isExistAgendaItem = agendaItems.stream()
+                .anyMatch(agendaItem -> selectItemIdList.contains(agendaItem.getId()));
+        if (!isExistAgendaItem) {
+            throw new AgendaItemNotFoundException(0L);
+        }
     }
 
     public void addVote(Vote vote) {

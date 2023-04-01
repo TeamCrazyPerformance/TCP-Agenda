@@ -35,19 +35,14 @@ public class VoteService {
     @Transactional
     public void vote(Long memberId, Long agendaId, VoteRequest request) {
         validateVoteRequest(request);
+        validateAlreadyVote(memberId, agendaId);
         Agenda agenda = findAgenda(agendaId);
         Member member = findMember(memberId);
 
         List<Long> selectItemIdList = getSelectItemIdList(request);
-        validateVote(agenda, member, selectItemIdList);
 
-        List<AgendaItem> selectedAgendaItems = agenda.getAgendaItems().stream()
-                .filter(agendaItem -> selectItemIdList.contains(agendaItem.getId()))
-                .toList();
-
-        selectedAgendaItems.stream()
-                .map(agendaItem -> Vote.createVote(member, agendaItem, agenda))
-                .forEach(voteRepository::save);
+        List<Vote> votes = agenda.vote(member, selectItemIdList);
+        voteRepository.saveAll(votes);
     }
 
     private void validateVoteRequest(VoteRequest request) {
@@ -64,24 +59,9 @@ public class VoteService {
                 .collect(Collectors.toList());
     }
 
-    private void validateVote(Agenda agenda, Member member, List<Long> selectItemIdList) {
-        agenda.validateAlreadyClosed();
-        agenda.validateIsTargetGrade(member.getGrades());
-        validateAlreadyVote(member.getId(), agenda.getId());
-        validateExistAgendaItem(agenda.getAgendaItems(), selectItemIdList);
-    }
-
     private void validateAlreadyVote(Long memberId, Long agendaId) {
         if (voteRepository.existsByMemberIdAndAgendaId(memberId, agendaId)) {
             throw new AlreadyVoteException(agendaId);
-        }
-    }
-
-    private void validateExistAgendaItem(List<AgendaItem> agendaItems, List<Long> selectItemIdList) {
-        boolean isExistAgendaItem = agendaItems.stream()
-                .anyMatch(agendaItem -> selectItemIdList.contains(agendaItem.getId()));
-        if (!isExistAgendaItem) {
-            throw new AgendaItemNotFoundException(0L);
         }
     }
 
