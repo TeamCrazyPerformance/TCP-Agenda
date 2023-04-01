@@ -32,12 +32,9 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.Mockito.mock;
-import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CLOSED_AT;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_CONTENT;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_ITEM1;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_ITEM2;
-import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_AGENDA_TITLE;
 import static tcp.project.agenda.common.fixture.AgendaFixture.BASIC_UPDATE_AGENDA_ITEM;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaItemUpdateRequest;
@@ -228,7 +225,7 @@ class AgendaServiceTest extends ApplicationServiceTest {
         voteService.vote(executiveRegular.getId(), agendaId, getBasicVoteRequest());
 
         //when
-        AgendaResponse response = agendaService.getAgenda(agendaId);
+        AgendaResponse response = agendaService.getAgenda(regular.getId(), agendaId);
 
         //then
         Agenda agenda = agendaRepository.findAll().get(0);
@@ -242,6 +239,7 @@ class AgendaServiceTest extends ApplicationServiceTest {
                 () -> assertThat(response.getVotedMember()).isEqualTo(2),
                 () -> assertThat(response.getVotedMember()).isEqualTo(2),
                 () -> assertThat(response.isOpen()).isTrue(),
+                () -> assertThat(response.isVoted()).isTrue(),
                 () -> assertThat(selectList.get(0).getId()).isEqualTo(1),
                 () -> assertThat(selectList.get(0).getContent()).isEqualTo(BASIC_AGENDA_ITEM1),
                 () -> assertThat(selectList.get(0).getVoteCount()).isEqualTo(2),
@@ -257,7 +255,7 @@ class AgendaServiceTest extends ApplicationServiceTest {
         //given
 
         //when then
-        assertThatThrownBy(() -> agendaService.getAgenda(999L))
+        assertThatThrownBy(() -> agendaService.getAgenda(regular.getId(), 999L))
                 .isInstanceOf(AgendaNotFoundException.class);
     }
 

@@ -274,7 +274,7 @@ class AgendaControllerTest extends MockControllerTest {
     void getAgendaTest() throws Exception {
         //given
         AgendaResponse response = getBasicAgendaResponse();
-        given(agendaService.getAgenda(any()))
+        given(agendaService.getAgenda(any(), any()))
                 .willReturn(response);
 
         //when then
@@ -288,7 +288,7 @@ class AgendaControllerTest extends MockControllerTest {
     @DisplayName("없는 안건을 조회할 경우 400을 응답해야 함")
     void getAgendaTest_agendaNotFound() throws Exception {
         //given
-        given(agendaService.getAgenda(any()))
+        given(agendaService.getAgenda(any(), any()))
                 .willThrow(new AgendaNotFoundException(1L));
 
         //when then

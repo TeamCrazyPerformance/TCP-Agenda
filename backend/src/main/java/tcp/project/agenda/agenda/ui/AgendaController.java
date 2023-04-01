@@ -43,8 +43,8 @@ public class AgendaController {
     }
 
     @GetMapping("/{agendaId}")
-    public ResponseEntity<AgendaResponse> getAgenda(@PathVariable Long agendaId) {
-        AgendaResponse response = agendaService.getAgenda(agendaId);
+    public ResponseEntity<AgendaResponse> getAgenda(@Authenticated Long memberId, @PathVariable Long agendaId) {
+        AgendaResponse response = agendaService.getAgenda(memberId, agendaId);
         return ResponseEntity.ok(response);
     }
 

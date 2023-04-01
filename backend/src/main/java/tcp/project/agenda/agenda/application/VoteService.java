@@ -30,7 +30,6 @@ public class VoteService {
 
     private final AgendaRepository agendaRepository;
     private final VoteRepository voteRepository;
-    private final AgendaItemRepository agendaItemRepository;
     private final MemberRepository memberRepository;
 
 

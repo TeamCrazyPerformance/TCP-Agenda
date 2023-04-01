@@ -98,7 +98,7 @@ public class AgendaService {
         agenda.close();
     }
 
-    public AgendaResponse getAgenda(Long agendaId) {
+    public AgendaResponse getAgenda(Long memberId, Long agendaId) {
         Agenda agenda = findAgenda(agendaId);
 
         List<SelectItemDto> selectList = agenda.getAgendaItems().stream()
@@ -108,8 +108,9 @@ public class AgendaService {
         GradeType targetGradeType = agenda.getTarget();
         int totalMember = memberGradeRepository.countByGrade_GradeType(targetGradeType);
         int votedMember = voteRepository.countDistinctMember(agenda);
+        boolean voted = Vote.didMemberVote(agenda.getVotes(), memberId);
 
-        return AgendaResponse.from(agenda, votedMember, totalMember, selectList);
+        return AgendaResponse.from(agenda, votedMember, totalMember, selectList, voted);
     }
 
     @Transactional

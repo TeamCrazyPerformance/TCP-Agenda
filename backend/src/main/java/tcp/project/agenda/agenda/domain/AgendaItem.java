@@ -33,7 +33,7 @@ public class AgendaItem {
     private String content;
 
     @OneToMany(mappedBy = "agendaItem")
-    private List<Vote> votes = new ArrayList<>();
+    private final List<Vote> votes = new ArrayList<>();
 
     public AgendaItem(String content) {
         this.content = content;

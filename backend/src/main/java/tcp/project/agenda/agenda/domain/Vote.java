@@ -13,10 +13,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.util.List;
 
 @Getter
 @Entity
-@Table(name = "vote_list")
+@Table(name = "votes")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Vote {
 
@@ -47,5 +48,10 @@ public class Vote {
         agenda.addVote(vote);
         agendaItem.addVote(vote);
         return vote;
+    }
+
+    public static boolean didMemberVote(List<Vote> votes, Long memberId) {
+        return votes.stream()
+                .anyMatch(vote -> vote.getMember().getId().equals(memberId));
     }
 }
