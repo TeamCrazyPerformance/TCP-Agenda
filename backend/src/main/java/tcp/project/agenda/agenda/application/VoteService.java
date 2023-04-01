@@ -8,7 +8,6 @@ import tcp.project.agenda.agenda.application.dto.VoteRequest;
 import tcp.project.agenda.agenda.application.validator.VoteValidator;
 import tcp.project.agenda.agenda.domain.Agenda;
 import tcp.project.agenda.agenda.domain.AgendaItem;
-import tcp.project.agenda.agenda.domain.AgendaItemRepository;
 import tcp.project.agenda.agenda.domain.AgendaRepository;
 import tcp.project.agenda.agenda.domain.Vote;
 import tcp.project.agenda.agenda.domain.VoteRepository;
