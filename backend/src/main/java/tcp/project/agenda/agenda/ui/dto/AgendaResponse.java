@@ -26,6 +26,8 @@ public class AgendaResponse {
 
     @JsonProperty("isOpen")
     private boolean open;
+    private boolean voted;
+
     private List<SelectItemDto> selectList;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
@@ -34,7 +36,7 @@ public class AgendaResponse {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime closedAt;
 
-    public static AgendaResponse from(Agenda agenda, int votedMember, int totalMember, List<SelectItemDto> selectList) {
+    public static AgendaResponse from(Agenda agenda, int votedMember, int totalMember, List<SelectItemDto> selectList, boolean voted) {
         return AgendaResponse.builder()
                 .id(agenda.getId())
                 .title(agenda.getTitle())
@@ -43,10 +45,10 @@ public class AgendaResponse {
                 .votedMember(votedMember)
                 .totalMember(totalMember)
                 .open(!agenda.isClosed())
+                .voted(voted)
                 .selectList(selectList)
                 .createdAt(agenda.getCreatedDate())
                 .closedAt(agenda.getClosedAt())
                 .build();
     }
-
 }
