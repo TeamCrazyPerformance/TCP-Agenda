@@ -86,13 +86,11 @@ public class Agenda extends BaseEntity {
 
     public void updateAgendaItems(List<AgendaItem> agendaItems) {
         validateAlreadyClosed();
-        validateAlreadyVoteStarted();
-        this.agendaItems.clear();
         this.agendaItems.addAll(agendaItems);
         agendaItems.forEach(agendaItem -> agendaItem.mappingAgenda(this));
     }
 
-    private void validateAlreadyVoteStarted() {
+    public void validateAlreadyVoteStarted() {
         if (isVoteStarted()) {
             throw new InvalidUpdateAlreadyVoteStartedAgendaException();
         }

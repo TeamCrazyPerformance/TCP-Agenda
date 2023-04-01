@@ -14,6 +14,7 @@ import tcp.project.agenda.agenda.application.validator.AgendaItemUpdateValidator
 import tcp.project.agenda.agenda.application.validator.AgendaUpdateValidator;
 import tcp.project.agenda.agenda.domain.Agenda;
 import tcp.project.agenda.agenda.domain.AgendaItem;
+import tcp.project.agenda.agenda.domain.AgendaItemRepository;
 import tcp.project.agenda.agenda.domain.AgendaRepository;
 import tcp.project.agenda.agenda.domain.Vote;
 import tcp.project.agenda.agenda.domain.VoteRepository;
@@ -42,6 +43,7 @@ public class AgendaService {
     private final AgendaRepository agendaRepository;
     private final VoteRepository voteRepository;
     private final MemberGradeRepository memberGradeRepository;
+    private final AgendaItemRepository agendaItemRepository;
 
     @Transactional
     public void createAgenda(Long memberId, AgendaCreateRequest request) {
@@ -144,7 +146,9 @@ public class AgendaService {
         validateAgendaItemUpdateRequest(request);
         Agenda agenda = findAgenda(agendaId);
         agenda.validateOwner(memberId);
+        agenda.validateAlreadyVoteStarted();
 
+        agendaItemRepository.deleteByAgendaId(agendaId);
         List<AgendaItem> agendaItems = getAgendaItems(request.getSelectList());
         agenda.updateAgendaItems(agendaItems);
     }
