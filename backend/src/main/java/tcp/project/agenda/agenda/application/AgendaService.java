@@ -14,6 +14,7 @@ import tcp.project.agenda.agenda.application.validator.AgendaItemUpdateValidator
 import tcp.project.agenda.agenda.application.validator.AgendaUpdateValidator;
 import tcp.project.agenda.agenda.domain.Agenda;
 import tcp.project.agenda.agenda.domain.AgendaItem;
+import tcp.project.agenda.agenda.domain.AgendaItemRepository;
 import tcp.project.agenda.agenda.domain.AgendaRepository;
 import tcp.project.agenda.agenda.domain.Vote;
 import tcp.project.agenda.agenda.domain.VoteRepository;
@@ -42,6 +43,7 @@ public class AgendaService {
     private final AgendaRepository agendaRepository;
     private final VoteRepository voteRepository;
     private final MemberGradeRepository memberGradeRepository;
+    private final AgendaItemRepository agendaItemRepository;
 
     @Transactional
     public void createAgenda(Long memberId, AgendaCreateRequest request) {
@@ -70,7 +72,7 @@ public class AgendaService {
     }
 
     public AgendaListResponse getAgendaList(Pageable pageable) {
-        Slice<Agenda> agendaPage = agendaRepository.findAll(pageable);
+        Slice<Agenda> agendaPage = agendaRepository.findSliceBy(pageable);
         List<AgendaDto> agendaList = getAgendaDtoList(agendaPage);
         return new AgendaListResponse(agendaList, agendaPage.getNumber(), agendaPage.hasNext());
     }
@@ -99,8 +101,7 @@ public class AgendaService {
     public AgendaResponse getAgenda(Long agendaId) {
         Agenda agenda = findAgenda(agendaId);
 
-        List<AgendaItem> agendaItems = agenda.getAgendaItems();
-        List<SelectItemDto> selectList = agendaItems.stream()
+        List<SelectItemDto> selectList = agenda.getAgendaItems().stream()
                 .map(agendaItem -> new SelectItemDto(agendaItem.getId(), agendaItem.getContent(), agendaItem.getVoteCount()))
                 .collect(Collectors.toList());
 
@@ -116,10 +117,8 @@ public class AgendaService {
         Agenda agenda = findAgenda(agendaId);
         agenda.validateOwner(memberId);
 
-        List<Vote> votes = voteRepository.findByAgendaId(agendaId);
-        if (!votes.isEmpty()) {
-            voteRepository.deleteAllInBatch(votes);
-        }
+        voteRepository.deleteByAgendaId(agendaId);
+        agendaItemRepository.deleteByAgendaId(agendaId);
         agendaRepository.delete(agenda);
     }
 
@@ -145,7 +144,9 @@ public class AgendaService {
         validateAgendaItemUpdateRequest(request);
         Agenda agenda = findAgenda(agendaId);
         agenda.validateOwner(memberId);
+        agenda.validateAlreadyVoteStarted();
 
+        agendaItemRepository.deleteByAgendaId(agendaId);
         List<AgendaItem> agendaItems = getAgendaItems(request.getSelectList());
         agenda.updateAgendaItems(agendaItems);
     }

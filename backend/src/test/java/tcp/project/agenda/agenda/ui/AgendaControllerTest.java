@@ -86,7 +86,7 @@ class AgendaControllerTest extends MockControllerTest {
         doNothing().when(agendaService).closeAgenda(any(), any());
 
         //when then
-        mockMvc.perform(post("/agenda/1")
+        mockMvc.perform(post("/agenda/1/close")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN))
                 .andExpect(status().isOk());
     }
@@ -100,7 +100,7 @@ class AgendaControllerTest extends MockControllerTest {
                 .closeAgenda(any(), any());
 
         //when then
-        mockMvc.perform(post("/agenda/1")
+        mockMvc.perform(post("/agenda/1/close")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN))
                 .andExpect(status().isBadRequest());
     }
@@ -114,7 +114,7 @@ class AgendaControllerTest extends MockControllerTest {
                 .closeAgenda(any(), any());
 
         //when then
-        mockMvc.perform(post("/agenda/1")
+        mockMvc.perform(post("/agenda/1/close")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN))
                 .andExpect(status().isBadRequest());
     }
@@ -128,7 +128,7 @@ class AgendaControllerTest extends MockControllerTest {
                 .closeAgenda(any(), any());
 
         //when then
-        mockMvc.perform(post("/agenda/1")
+        mockMvc.perform(post("/agenda/1/close")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + ACCESS_TOKEN))
                 .andExpect(status().isBadRequest());
     }

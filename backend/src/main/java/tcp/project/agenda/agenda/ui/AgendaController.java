@@ -48,7 +48,7 @@ public class AgendaController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{agendaId}")
+    @PostMapping("/{agendaId}/close")
     public ResponseEntity<Void> closeAgenda(@Authenticated Long memberId, @PathVariable Long agendaId) {
         agendaService.closeAgenda(memberId, agendaId);
         return ResponseEntity.ok().build();

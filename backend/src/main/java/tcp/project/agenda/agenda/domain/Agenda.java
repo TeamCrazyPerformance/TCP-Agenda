@@ -18,6 +18,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -40,7 +41,7 @@ public class Agenda extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -56,7 +57,7 @@ public class Agenda extends BaseEntity {
     @Column(name = "is_closed")
     private boolean closed;
 
-    @OneToMany(mappedBy = "agenda", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "agenda", cascade = CascadeType.PERSIST)
     private final List<AgendaItem> agendaItems = new ArrayList<>();
 
     @OneToMany(mappedBy = "agenda")
@@ -85,13 +86,11 @@ public class Agenda extends BaseEntity {
 
     public void updateAgendaItems(List<AgendaItem> agendaItems) {
         validateAlreadyClosed();
-        validateAlreadyVoteStarted();
-        this.agendaItems.clear();
         this.agendaItems.addAll(agendaItems);
         agendaItems.forEach(agendaItem -> agendaItem.mappingAgenda(this));
     }
 
-    private void validateAlreadyVoteStarted() {
+    public void validateAlreadyVoteStarted() {
         if (isVoteStarted()) {
             throw new InvalidUpdateAlreadyVoteStartedAgendaException();
         }

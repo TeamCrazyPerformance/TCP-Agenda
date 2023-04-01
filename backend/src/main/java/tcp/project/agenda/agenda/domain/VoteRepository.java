@@ -1,6 +1,7 @@
 package tcp.project.agenda.agenda.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -16,5 +17,7 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
 
     boolean existsByMemberIdAndAgendaId(Long memberId, Long agendaId);
 
-    List<Vote> findByAgendaId(Long agendaId);
+    @Modifying
+    @Query("delete from Vote v where v.agenda.id = :agendaId")
+    void deleteByAgendaId(@Param("agendaId") Long agendaId);
 }

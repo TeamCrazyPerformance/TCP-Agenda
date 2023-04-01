@@ -41,11 +41,12 @@ public class VoteService {
         Member member = findMember(memberId);
 
         List<Long> selectItemIdList = getSelectItemIdList(request);
-        List<Long> agendaItemIdList = getAgendaItemIdList(agenda);
+        validateVote(agenda, member, selectItemIdList);
 
-        validateVote(agenda, member, selectItemIdList, agendaItemIdList);
+        List<AgendaItem> selectedAgendaItems = agenda.getAgendaItems().stream()
+                .filter(agendaItem -> selectItemIdList.contains(agendaItem.getId()))
+                .toList();
 
-        List<AgendaItem> selectedAgendaItems = agendaItemRepository.findByIdIn(selectItemIdList);
         selectedAgendaItems.stream()
                 .map(agendaItem -> Vote.createVote(member, agendaItem, agenda))
                 .forEach(voteRepository::save);
@@ -65,17 +66,11 @@ public class VoteService {
                 .collect(Collectors.toList());
     }
 
-    private List<Long> getAgendaItemIdList(Agenda agenda) {
-        return agenda.getAgendaItems().stream()
-                .map(AgendaItem::getId)
-                .collect(Collectors.toList());
-    }
-
-    private void validateVote(Agenda agenda, Member member, List<Long> selectItemIdList, List<Long> agendaItemIdList) {
+    private void validateVote(Agenda agenda, Member member, List<Long> selectItemIdList) {
         agenda.validateAlreadyClosed();
         agenda.validateIsTargetGrade(member.getGrades());
         validateAlreadyVote(member.getId(), agenda.getId());
-        validateExistAgendaItem(agendaItemIdList, selectItemIdList);
+        validateExistAgendaItem(agenda.getAgendaItems(), selectItemIdList);
     }
 
     private void validateAlreadyVote(Long memberId, Long agendaId) {
@@ -84,11 +79,12 @@ public class VoteService {
         }
     }
 
-    private void validateExistAgendaItem(List<Long> agendaItemIdList, List<Long> selectItemIdList) {
-        selectItemIdList.stream()
-                .filter(voteId -> !agendaItemIdList.contains(voteId))
-                .findAny()
-                .ifPresent(voteId -> {throw new AgendaItemNotFoundException(voteId);});
+    private void validateExistAgendaItem(List<AgendaItem> agendaItems, List<Long> selectItemIdList) {
+        boolean isExistAgendaItem = agendaItems.stream()
+                .anyMatch(agendaItem -> selectItemIdList.contains(agendaItem.getId()));
+        if (!isExistAgendaItem) {
+            throw new AgendaItemNotFoundException(0L);
+        }
     }
 
     @Transactional

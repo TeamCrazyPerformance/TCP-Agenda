@@ -241,6 +241,7 @@ class AgendaServiceTest extends ApplicationServiceTest {
                 () -> assertThat(response.getClosedAt()).isEqualTo(agenda.getClosedAt()),
                 () -> assertThat(response.getVotedMember()).isEqualTo(2),
                 () -> assertThat(response.getVotedMember()).isEqualTo(2),
+                () -> assertThat(response.isOpen()).isTrue(),
                 () -> assertThat(selectList.get(0).getId()).isEqualTo(1),
                 () -> assertThat(selectList.get(0).getContent()).isEqualTo(BASIC_AGENDA_ITEM1),
                 () -> assertThat(selectList.get(0).getVoteCount()).isEqualTo(2),
