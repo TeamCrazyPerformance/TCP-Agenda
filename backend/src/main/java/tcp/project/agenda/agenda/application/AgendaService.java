@@ -99,8 +99,7 @@ public class AgendaService {
     public AgendaResponse getAgenda(Long agendaId) {
         Agenda agenda = findAgenda(agendaId);
 
-        List<AgendaItem> agendaItems = agenda.getAgendaItems();
-        List<SelectItemDto> selectList = agendaItems.stream()
+        List<SelectItemDto> selectList = agenda.getAgendaItems().stream()
                 .map(agendaItem -> new SelectItemDto(agendaItem.getId(), agendaItem.getContent(), agendaItem.getVoteCount()))
                 .collect(Collectors.toList());
 
