@@ -18,7 +18,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicAgendaCreateRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getBasicVoteRequest;
 import static tcp.project.agenda.common.fixture.AgendaFixture.getInvalidVoteRequest;
