@@ -162,7 +162,7 @@ public class Agenda extends BaseEntity {
         boolean isExistAgendaItem = agendaItems.stream()
                 .anyMatch(agendaItem -> selectItemIdList.contains(agendaItem.getId()));
         if (!isExistAgendaItem) {
-            throw new AgendaItemNotFoundException(0L);
+            throw new AgendaItemNotFoundException();
         }
     }
 
