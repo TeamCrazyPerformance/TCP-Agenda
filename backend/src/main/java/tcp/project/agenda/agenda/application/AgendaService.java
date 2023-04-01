@@ -93,7 +93,6 @@ public class AgendaService {
     public void closeAgenda(Long memberId, Long agendaId) {
         Agenda agenda = findAgenda(agendaId);
         agenda.validateOwner(memberId);
-        agenda.validateAlreadyClosed();
 
         agenda.close();
     }
