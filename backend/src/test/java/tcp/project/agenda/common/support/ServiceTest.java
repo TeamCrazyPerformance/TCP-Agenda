@@ -17,7 +17,7 @@ import static tcp.project.agenda.common.fixture.MemberFixture.getGeneralMember;
 import static tcp.project.agenda.common.fixture.MemberFixture.getRegularMember;
 
 @ApplicationTest
-public class ApplicationServiceTest {
+public class ServiceTest {
 
     @Autowired
     protected MemberRepository memberRepository;
