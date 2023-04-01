@@ -7,11 +7,9 @@ import tcp.project.agenda.agenda.application.dto.SelectedAgendaItemDto;
 import tcp.project.agenda.agenda.application.dto.VoteRequest;
 import tcp.project.agenda.agenda.application.validator.VoteValidator;
 import tcp.project.agenda.agenda.domain.Agenda;
-import tcp.project.agenda.agenda.domain.AgendaItem;
 import tcp.project.agenda.agenda.domain.AgendaRepository;
 import tcp.project.agenda.agenda.domain.Vote;
 import tcp.project.agenda.agenda.domain.VoteRepository;
-import tcp.project.agenda.agenda.exception.AgendaItemNotFoundException;
 import tcp.project.agenda.agenda.exception.AgendaNotFoundException;
 import tcp.project.agenda.agenda.exception.AlreadyVoteException;
 import tcp.project.agenda.auth.exception.MemberNotFoundException;
@@ -53,16 +51,16 @@ public class VoteService {
         }
     }
 
-    private List<Long> getSelectItemIdList(VoteRequest request) {
-        return request.getSelectList().stream()
-                .map(SelectedAgendaItemDto::getId)
-                .collect(Collectors.toList());
-    }
-
     private void validateAlreadyVote(Long memberId, Long agendaId) {
         if (voteRepository.existsByMemberIdAndAgendaId(memberId, agendaId)) {
             throw new AlreadyVoteException(agendaId);
         }
+    }
+
+    private List<Long> getSelectItemIdList(VoteRequest request) {
+        return request.getSelectList().stream()
+                .map(SelectedAgendaItemDto::getId)
+                .collect(Collectors.toList());
     }
 
     @Transactional
