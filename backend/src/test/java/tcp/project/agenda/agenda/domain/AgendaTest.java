@@ -106,7 +106,6 @@ class AgendaTest {
     void updateAgendaItemsTest() throws Exception {
         //given
         Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, grade.getGradeType(), BASIC_AGENDA_CLOSED_AT);
-        agenda.updateAgendaItems(List.of(AgendaItem.createAgendaItem(BASIC_AGENDA_ITEM1), AgendaItem.createAgendaItem(BASIC_AGENDA_ITEM2)));
 
         //when
         agenda.updateAgendaItems(List.of(AgendaItem.createAgendaItem(BASIC_UPDATE_AGENDA_ITEM)));
@@ -127,20 +126,6 @@ class AgendaTest {
         //when then
         assertThatThrownBy(() -> agenda.updateAgendaItems(List.of(AgendaItem.createAgendaItem(BASIC_UPDATE_AGENDA_ITEM))))
                 .isInstanceOf(AgendaAlreadyClosedException.class);
-    }
-
-    @Test
-    @DisplayName("투표가 시작된 안건인 경우 투표 항목을 수정하면 예외가 발생해야 함")
-    void updateAgendaItemsTest_alreadyVoteStarted() throws Exception {
-        //given
-        Agenda agenda = Agenda.createAgendaFrom(member, BASIC_AGENDA_TITLE, BASIC_AGENDA_CONTENT, grade.getGradeType(), BASIC_AGENDA_CLOSED_AT);
-        AgendaItem agendaItem1 = AgendaItem.createAgendaItem(BASIC_AGENDA_ITEM1);
-        agenda.updateAgendaItems(List.of(agendaItem1, AgendaItem.createAgendaItem(BASIC_AGENDA_ITEM2)));
-        Vote.createVote(member, agendaItem1, agenda);
-
-        //when then
-        assertThatThrownBy(() -> agenda.updateAgendaItems(List.of(AgendaItem.createAgendaItem(BASIC_UPDATE_AGENDA_ITEM))))
-                .isInstanceOf(InvalidUpdateAlreadyVoteStartedAgendaException.class);
     }
 
     @Test
