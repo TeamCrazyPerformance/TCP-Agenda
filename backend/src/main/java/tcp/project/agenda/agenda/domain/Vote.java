@@ -17,7 +17,7 @@ import java.util.List;
 
 @Getter
 @Entity
-@Table(name = "vote_list")
+@Table(name = "votes")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Vote {
 
