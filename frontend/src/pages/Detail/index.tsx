@@ -1,10 +1,11 @@
 import styles from './index.scss';
-function Home() {
+
+function Detail() {
   return (
     <div className={styles.container}>
-      <p>This is /</p>
+      <p>This is /detail</p>
     </div>
   );
 }
 
-export default Home;
+export default Detail;

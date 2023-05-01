@@ -1,5 +1,6 @@
 import styles from './index.scss';
-function Home() {
+
+function Login() {
   return (
     <div className={styles.container}>
       <p>This is /</p>
@@ -7,4 +8,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Login;
