@@ -1,5 +1,58 @@
+@import '~/styles/variables';
 .container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+
+  width: 100%;
+}
+
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  width: 62.5%;
+  height: 5.75rem;
+
+  & > div > input {
+    font-size: 0.9rem;
+    padding-left: 0.75rem;
+    border: none;
+  }
+}
+
+.singleLineInput {
   display: flex;
 
   width: 100%;
+  height: 2.5rem;
+
+  border: 1px solid $GRAY_008;
+  border-radius: 5px !important;
+
+  & > img {
+    width: 3rem;
+    height: 100%;
+
+    margin: auto;
+    padding: 0.5rem;
+    box-sizing: border-box;
+
+    background-color: $GRAY_012;
+
+    border-radius: 5px 0 0 5px !important;
+  }
+}
+
+.submitButton {
+  width: 62.5%;
+  height: 2.5rem;
+
+  color: $GRAY_001;
+  background-color: $GRAY_009;
+
+  border-radius: 5px;
 }
