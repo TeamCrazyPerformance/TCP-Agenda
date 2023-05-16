@@ -146,7 +146,8 @@ input {
   height: 2rem;
   box-sizing: border-box;
 }
-input[type='text'] {
+input[type='text'],
+input[type='password'] {
   padding: 0.25rem 0.5rem;
 
   border-radius: 5px;
