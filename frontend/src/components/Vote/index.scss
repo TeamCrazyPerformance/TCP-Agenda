@@ -1,19 +1,36 @@
 @import '~/styles/variables';
 .wrap {
-  font-size: 16px;
+  font-size: 12px;
   color: rgb(64, 64, 64);
   text-align: center;
   line-height: 2.5em;
   border-radius: 4px;
   background-color: $GRAY_009;
+  flex: 1;
+  padding: 15px;
 }
-
 .first {
   display: flex;
+  justify-content: space-between;
 }
 .second {
   display: flex;
 }
+
 .third {
   display: flex;
+  font-size: 13px;
+}
+.title {
+  font-size: 16px;
+}
+
+// .voteState {
+//   padding-right: 10px;
+// }
+
+.button {
+  padding-bottom: 2px;
+  margin-right: 8px;
+  border-radius: 3px;
 }

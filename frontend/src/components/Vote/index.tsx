@@ -16,10 +16,12 @@ function Vote({ data }: VoteProps) {
   let createdAt = ConvertDate(data.createdAt);
   let closedAt = ConvertDate(data.closedAt);
   return (
-    <div>
+    <div className={styles.wrap}>
       <div className={styles.first}>
-        <div>{data.title}</div>
-        <div>{data.isOpen ? <div>진행중</div> : <div>투표마감</div>}</div>
+        <div className={styles.title}>{data.title}</div>
+        <div className={styles.voteState}>
+          {data.isOpen ? <div>진행중</div> : <div>투표마감</div>}
+        </div>
       </div>
       <div className={styles.second}>대상 : {data.target}</div>
       <div className={styles.third}>
@@ -27,11 +29,12 @@ function Vote({ data }: VoteProps) {
           {createdAt} ~{closedAt}
         </div>
         <div>투표인원 : {data.votedMember} 명</div>
-        {data.isOpen ? <button>투표하기</button> : <button>결과보기</button>}
+        {data.isOpen ? (
+          <button className={styles.button}>투표하기</button>
+        ) : (
+          <button className={styles.button}>결과보기</button>
+        )}
       </div>
-      {/* <input className={styles.input} {...inputAttribute}>
-        {children}
-      </input> */}
     </div>
   );
 }
