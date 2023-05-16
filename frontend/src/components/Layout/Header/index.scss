@@ -1,6 +1,12 @@
 @import '~/styles/variables';
 
 .container {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 100%;
+
   background-color: $GRAY_009;
 
   h1 {
