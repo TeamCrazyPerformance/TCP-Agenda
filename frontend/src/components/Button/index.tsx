@@ -1,6 +1,7 @@
 import styles from './index.scss';
 
 interface ButtonProps {
+  inputAttribute: React.ButtonHTMLAttributes<HTMLButtonElement>;
   children: React.ReactNode;
 }
 

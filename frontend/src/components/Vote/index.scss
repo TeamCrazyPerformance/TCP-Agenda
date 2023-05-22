@@ -6,8 +6,10 @@
   line-height: 2.5em;
   border-radius: 4px;
   background-color: $GRAY_009;
-  flex: 1;
   padding: 15px;
+  width: 83%;
+  height: 15%;
+  margin-top: 60px;
 }
 .first {
   display: flex;
@@ -21,12 +23,16 @@
   display: flex;
   font-size: 13px;
 }
+.third div {
+  padding-right: 5px;
+}
 .title {
   font-size: 16px;
 }
 
 // .voteState {
-//   padding-right: 10px;
+//   margin-right: 0;
+//   margin-left: 6px;
 // }
 
 .button {

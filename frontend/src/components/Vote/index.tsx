@@ -1,5 +1,6 @@
 import styles from './index.scss';
 import ConvertDate from '../../utils/convertDate';
+import Button from 'components/Button';
 
 interface VoteProps {
   data: {
@@ -15,6 +16,12 @@ interface VoteProps {
 function Vote({ data }: VoteProps) {
   let createdAt = ConvertDate(data.createdAt);
   let closedAt = ConvertDate(data.closedAt);
+  const inputAttribute = {
+    onClick: () => {
+      console.log('Button clicked!');
+    },
+    disabled: true,
+  };
   return (
     <div className={styles.wrap}>
       <div className={styles.first}>
@@ -28,10 +35,11 @@ function Vote({ data }: VoteProps) {
         <div>
           {createdAt} ~{closedAt}
         </div>
-        <div>투표인원 : {data.votedMember} 명</div>
+        <div>투표 인원 : {data.votedMember} 명</div>
         {data.isOpen ? (
-          <button className={styles.button}>투표하기</button>
+          <Button inputAttribute={inputAttribute}>투표하기</Button>
         ) : (
+          // <button className={styles.button}>투표하기</button>
           <button className={styles.button}>결과보기</button>
         )}
       </div>
