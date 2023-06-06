@@ -30,12 +30,26 @@
   font-size: 16px;
 }
 
-// .voteState {
-//   margin-right: 0;
-//   margin-left: 6px;
-// }
+.voteState {
+  margin-right: 0;
+  margin-left: 6px;
+  --process: rgb(26, 188, 156);
+  --end: $GRAY_001;
+}
+div.process {
+  color: var(--process);
+}
+div.end {
+  color: var(--end);
+}
 
-.button {
+.votebutton {
+  padding-bottom: 2px;
+  margin-right: 8px;
+  border-radius: 3px;
+  background-color: rgb(52, 152, 219);
+}
+.voteresult {
   padding-bottom: 2px;
   margin-right: 8px;
   border-radius: 3px;
