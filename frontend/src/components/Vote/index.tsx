@@ -14,8 +14,8 @@ interface VoteProps {
   };
 }
 function Vote({ data }: VoteProps) {
-  let createdAt = ConvertDate(data.createdAt);
-  let closedAt = ConvertDate(data.closedAt);
+  const createdAt = ConvertDate(data.createdAt);
+  const closedAt = ConvertDate(data.closedAt);
   const inputAttribute = {
     onClick: () => {
       console.log('Button clicked!');
@@ -27,7 +27,11 @@ function Vote({ data }: VoteProps) {
       <div className={styles.first}>
         <div className={styles.title}>{data.title}</div>
         <div className={styles.voteState}>
-          {data.isOpen ? <div>진행중</div> : <div>투표마감</div>}
+          {data.isOpen ? (
+            <div className={styles.process}>진행중</div>
+          ) : (
+            <div className={styles.end}>투표마감</div>
+          )}
         </div>
       </div>
       <div className={styles.second}>대상 : {data.target}</div>
@@ -37,10 +41,12 @@ function Vote({ data }: VoteProps) {
         </div>
         <div>투표 인원 : {data.votedMember} 명</div>
         {data.isOpen ? (
-          <Button inputAttribute={inputAttribute}>투표하기</Button>
+          <Button inputAttribute={inputAttribute} className={styles.votebutton}>
+            투표하기
+          </Button>
         ) : (
           // <button className={styles.button}>투표하기</button>
-          <button className={styles.button}>결과보기</button>
+          <Button inputAttribute={styles.voteresult}>결과보기</Button>
         )}
       </div>
     </div>
