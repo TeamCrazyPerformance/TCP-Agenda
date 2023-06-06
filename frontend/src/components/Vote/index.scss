@@ -7,7 +7,6 @@
   border-radius: 4px;
   background-color: $GRAY_009;
   padding: 15px;
-  width: 83%;
   height: 15%;
   margin-top: 60px;
 }
@@ -22,9 +21,11 @@
 .third {
   display: flex;
   font-size: 13px;
+  align-items: center;
 }
 .third div {
   padding-right: 5px;
+  margin-left: 3px;
 }
 .title {
   font-size: 16px;
@@ -33,19 +34,19 @@
 .voteState {
   margin-right: 0;
   margin-left: 6px;
-  --process: rgb(26, 188, 156);
-  --end: $GRAY_001;
 }
-div.process {
-  color: var(--process);
+.process {
+  color: rgb(26, 188, 156);
 }
-div.end {
-  color: var(--end);
+.end {
+  color: $GRAY_001;
 }
 
 .votebutton {
-  padding-bottom: 2px;
-  margin-right: 8px;
+  // padding-bottom: 2px;
+  padding: 6px;
+  // margin-right: 8px;
+  margin-left: 5px;
   border-radius: 3px;
   background-color: rgb(52, 152, 219);
 }

@@ -1,7 +1,8 @@
 import styles from './index.scss';
 import ConvertDate from '../../utils/convertDate';
 import Button from 'components/Button';
-
+import Calender from 'assets/svg/calender.svg';
+import Person from 'assets/svg/person.svg';
 interface VoteProps {
   data: {
     id: string;
@@ -36,9 +37,11 @@ function Vote({ data }: VoteProps) {
       </div>
       <div className={styles.second}>대상 : {data.target}</div>
       <div className={styles.third}>
+        <img width="13" height="15" src={Calender} />
         <div>
           {createdAt} ~{closedAt}
         </div>
+        <img width="13" height="15" src={Person} />
         <div>투표 인원 : {data.votedMember} 명</div>
         {data.isOpen ? (
           <Button inputAttribute={inputAttribute} className={styles.votebutton}>
