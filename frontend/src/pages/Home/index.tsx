@@ -8,8 +8,8 @@ function Home() {
     createdAt: '2023-03-01T22:59:59',
     closedAt: '2023-03-01T22:59:59',
     target: '재학생',
-    votedMember: '1',
-    isOpen: false,
+    votedMember: '10',
+    isOpen: true,
   };
   return (
     <div className={styles.container}>

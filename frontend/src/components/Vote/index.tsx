@@ -3,6 +3,7 @@ import ConvertDate from '../../utils/convertDate';
 import Button from 'components/Button';
 import Calender from 'assets/svg/calender.svg';
 import Person from 'assets/svg/person.svg';
+import { useNavigate } from 'react-router-dom';
 interface VoteProps {
   data: {
     id: string;
@@ -23,6 +24,7 @@ function Vote({ data }: VoteProps) {
     },
     disabled: true,
   };
+  const navigate = useNavigate();
   return (
     <div className={styles.wrap}>
       <div className={styles.first}>
@@ -31,7 +33,7 @@ function Vote({ data }: VoteProps) {
           {data.isOpen ? (
             <div className={styles.process}>진행중</div>
           ) : (
-            <div className={styles.end}>투표마감</div>
+            <div className={styles.end}>투표 마감</div>
           )}
         </div>
       </div>
@@ -48,13 +50,21 @@ function Vote({ data }: VoteProps) {
           <div>투표 인원 : {data.votedMember} 명</div>
         </div>
         {data.isOpen ? (
-          <Button inputAttribute={inputAttribute} className={styles.votebutton}>
+          <Button
+            inputAttribute={inputAttribute}
+            onClick={() => {
+              navigate('/vote');
+            }}
+            className={styles.votebutton}
+          >
             투표하기
           </Button>
         ) : (
-          // <button className={styles.button}>투표하기</button>
           <Button
             inputAttribute={styles.voteresult}
+            onClick={() => {
+              navigate(`/voteresult/${data.id}`);
+            }}
             className={styles.voteresult}
           >
             결과보기

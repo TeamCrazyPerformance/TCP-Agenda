@@ -3,6 +3,7 @@ import ConvertDate from '../../utils/convertDate';
 import Button from 'components/Button';
 import Calender from 'assets/svg/calender.svg';
 import Person from 'assets/svg/person.svg';
+import { useNavigate } from 'react-router-dom';
 interface VoteProps {
   data: {
     id: string;
@@ -23,6 +24,7 @@ function AdminVote({ data }: VoteProps) {
     },
     disabled: true,
   };
+  const navigate = useNavigate();
   return (
     <div className={styles.wrap}>
       <div className={styles.first}>
@@ -54,31 +56,42 @@ function AdminVote({ data }: VoteProps) {
           <div>
             <Button
               inputAttribute={inputAttribute}
+              onClick={() => {
+                navigate(`/vote/${data.id}`);
+              }}
               className={styles.votebutton}
             >
               투표하기
             </Button>
             <Button
               inputAttribute={inputAttribute}
+              onClick={() => {
+                navigate(`/editvote/${data.id}`);
+              }}
               className={styles.editbutton}
             >
               수정하기
             </Button>
             <Button
               inputAttribute={inputAttribute}
-              className={styles.endbutton}
+              onClick={() => {
+                navigate(`/closevote/${data.id}`);
+              }}
+              className={styles.closebutton}
             >
               마감하기
             </Button>
             <Button
               inputAttribute={inputAttribute}
+              onClick={() => {
+                navigate(`/deletevote/${data.id}`);
+              }}
               className={styles.deletebutton}
             >
               삭제하기
             </Button>
           </div>
         ) : (
-          // <button className={styles.button}>투표하기</button>
           <div>
             <Button inputAttribute={inputAttribute} className={styles.disable}>
               투표하기
@@ -91,6 +104,9 @@ function AdminVote({ data }: VoteProps) {
             </Button>
             <Button
               inputAttribute={inputAttribute}
+              onClick={() => {
+                navigate(`/deletevote/${data.id}`);
+              }}
               className={styles.deletebutton}
             >
               삭제하기
