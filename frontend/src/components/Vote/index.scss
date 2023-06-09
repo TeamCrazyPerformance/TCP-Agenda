@@ -16,6 +16,8 @@
 }
 .second {
   display: flex;
+  position: relative;
+  top: 10px;
 }
 
 .third {
@@ -47,6 +49,7 @@
   padding: 6px;
   // margin-right: 8px;
   margin-left: 5px;
+  margin-bottom: 10px;
   border-radius: 3px;
   background-color: rgb(52, 152, 219);
 }
