@@ -80,22 +80,13 @@ function AdminVote({ data }: VoteProps) {
         ) : (
           // <button className={styles.button}>투표하기</button>
           <div>
-            <Button
-              inputAttribute={inputAttribute}
-              className={styles.votebutton}
-            >
+            <Button inputAttribute={inputAttribute} className={styles.disable}>
               투표하기
             </Button>
-            <Button
-              inputAttribute={inputAttribute}
-              className={styles.editbutton}
-            >
+            <Button inputAttribute={inputAttribute} className={styles.disable}>
               수정하기
             </Button>
-            <Button
-              inputAttribute={inputAttribute}
-              className={styles.endbutton}
-            >
+            <Button inputAttribute={inputAttribute} className={styles.disable}>
               마감하기
             </Button>
             <Button
