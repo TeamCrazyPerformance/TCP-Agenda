@@ -37,19 +37,28 @@ function Vote({ data }: VoteProps) {
       </div>
       <div className={styles.second}>대상 : {data.target}</div>
       <div className={styles.third}>
-        <img width="13" height="15" src={Calender} />
         <div>
-          {createdAt} ~{closedAt}
+          <img width="13" height="15" src={Calender} />
+          <div>
+            {createdAt} ~{closedAt}
+          </div>
         </div>
-        <img width="13" height="15" src={Person} />
-        <div>투표 인원 : {data.votedMember} 명</div>
+        <div>
+          <img width="13" height="15" src={Person} />
+          <div>투표 인원 : {data.votedMember} 명</div>
+        </div>
         {data.isOpen ? (
           <Button inputAttribute={inputAttribute} className={styles.votebutton}>
             투표하기
           </Button>
         ) : (
           // <button className={styles.button}>투표하기</button>
-          <Button inputAttribute={styles.voteresult}>결과보기</Button>
+          <Button
+            inputAttribute={styles.voteresult}
+            className={styles.voteresult}
+          >
+            결과보기
+          </Button>
         )}
       </div>
     </div>

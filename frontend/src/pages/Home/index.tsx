@@ -9,12 +9,13 @@ function Home() {
     closedAt: '2023-03-01T22:59:59',
     target: '재학생',
     votedMember: '1',
-    isOpen: true,
+    isOpen: false,
   };
   return (
     <div className={styles.container}>
       {/* <p>This is /</p> */}
       <AdminVote data={data} />
+      {/* <Vote data={data} /> */}
     </div>
   );
 }
