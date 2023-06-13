@@ -1,7 +1,8 @@
 @import '~/styles/variables';
 .wrap {
   font-size: 12px;
-  color: rgb(64, 64, 64);
+  // color: rgb(64, 64, 64);
+  color: $BLACK_000;
   text-align: center;
   line-height: 2.5em;
   border-radius: 4px;
@@ -43,23 +44,20 @@
   margin-left: 6px;
 }
 .process {
-  color: rgb(26, 188, 156);
+  // color: rgb(26, 188, 156);
+  color: $GREEN_001;
 }
 .end {
   color: $BLACK_000;
 }
 
 .votebutton {
-  // padding-bottom: 2px;
-  // padding: 6px;
-  // margin-right: 8px;
   font-size: 12px;
   width: 61px;
   height: 25px;
   margin-left: 5px;
-  // margin-bottom: 10px;
   border-radius: 3px;
-  background-color: rgb(52, 152, 219);
+  background-color: $BLUE_000;
 }
 .voteresult {
   font-size: 12px;

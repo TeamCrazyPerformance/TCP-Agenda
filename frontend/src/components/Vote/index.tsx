@@ -1,9 +1,13 @@
-import styles from './index.scss';
-import ConvertDate from '../../utils/convertDate';
+import { useNavigate } from 'react-router-dom';
+
 import Button from 'components/Button';
+
 import Calender from 'assets/svg/calender.svg';
 import Person from 'assets/svg/person.svg';
-import { useNavigate } from 'react-router-dom';
+
+import styles from './index.scss';
+import ConvertDate from '../../utils/convertDate';
+
 interface VoteProps {
   data: {
     id: string;
@@ -18,12 +22,6 @@ interface VoteProps {
 function Vote({ data }: VoteProps) {
   const createdAt = ConvertDate(data.createdAt);
   const closedAt = ConvertDate(data.closedAt);
-  const inputAttribute = {
-    onClick: () => {
-      console.log('Button clicked!');
-    },
-    disabled: true,
-  };
   const navigate = useNavigate();
   return (
     <div className={styles.wrap}>
@@ -40,18 +38,17 @@ function Vote({ data }: VoteProps) {
       <div className={styles.second}>대상 : {data.target}</div>
       <div className={styles.third}>
         <div>
-          <img width="13" height="15" src={Calender} />
+          <img width="13" height="15" src={Calender} alt="날짜" />
           <div>
             {createdAt} ~{closedAt}
           </div>
         </div>
         <div>
-          <img width="13" height="15" src={Person} />
+          <img width="13" height="15" src={Person} alt="인원" />
           <div>투표 인원 : {data.votedMember} 명</div>
         </div>
         {data.isOpen ? (
           <Button
-            inputAttribute={inputAttribute}
             onClick={() => {
               navigate('/vote');
             }}
@@ -61,7 +58,6 @@ function Vote({ data }: VoteProps) {
           </Button>
         ) : (
           <Button
-            inputAttribute={styles.voteresult}
             onClick={() => {
               navigate(`/voteresult/${data.id}`);
             }}

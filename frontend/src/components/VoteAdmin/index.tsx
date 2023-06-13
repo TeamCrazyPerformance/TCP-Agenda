@@ -1,9 +1,13 @@
-import styles from './index.scss';
-import ConvertDate from '../../utils/convertDate';
+import { useNavigate } from 'react-router-dom';
+
 import Button from 'components/Button';
+
 import Calender from 'assets/svg/calender.svg';
 import Person from 'assets/svg/person.svg';
-import { useNavigate } from 'react-router-dom';
+
+import styles from './index.scss';
+import ConvertDate from '../../utils/convertDate';
+
 interface VoteProps {
   data: {
     id: string;
@@ -18,12 +22,6 @@ interface VoteProps {
 function AdminVote({ data }: VoteProps) {
   const createdAt = ConvertDate(data.createdAt);
   const closedAt = ConvertDate(data.closedAt);
-  const inputAttribute = {
-    onClick: () => {
-      console.log('Button clicked!');
-    },
-    disabled: true,
-  };
   const navigate = useNavigate();
   return (
     <div className={styles.wrap}>
@@ -41,11 +39,11 @@ function AdminVote({ data }: VoteProps) {
       <div className={styles.second}>
         <div className={styles.target}>대상 : {data.target}</div>
         <div>
-          <img width="13" height="15" src={Person} />
+          <img width="13" height="15" src={Person} alt="인원" />
           <div>투표 인원 : {data.votedMember} 명</div>
         </div>
         <div className={styles.calender}>
-          <img width="13" height="15" src={Calender} />
+          <img width="13" height="15" src={Calender} alt="날짜" />
           <div>
             {createdAt} ~{closedAt}
           </div>
@@ -55,7 +53,6 @@ function AdminVote({ data }: VoteProps) {
         {data.isOpen ? (
           <div>
             <Button
-              inputAttribute={inputAttribute}
               onClick={() => {
                 navigate(`/vote/${data.id}`);
               }}
@@ -64,7 +61,6 @@ function AdminVote({ data }: VoteProps) {
               투표하기
             </Button>
             <Button
-              inputAttribute={inputAttribute}
               onClick={() => {
                 navigate(`/editvote/${data.id}`);
               }}
@@ -73,7 +69,6 @@ function AdminVote({ data }: VoteProps) {
               수정하기
             </Button>
             <Button
-              inputAttribute={inputAttribute}
               onClick={() => {
                 navigate(`/closevote/${data.id}`);
               }}
@@ -82,7 +77,6 @@ function AdminVote({ data }: VoteProps) {
               마감하기
             </Button>
             <Button
-              inputAttribute={inputAttribute}
               onClick={() => {
                 navigate(`/deletevote/${data.id}`);
               }}
@@ -93,17 +87,10 @@ function AdminVote({ data }: VoteProps) {
           </div>
         ) : (
           <div>
-            <Button inputAttribute={inputAttribute} className={styles.disable}>
-              투표하기
-            </Button>
-            <Button inputAttribute={inputAttribute} className={styles.disable}>
-              수정하기
-            </Button>
-            <Button inputAttribute={inputAttribute} className={styles.disable}>
-              마감하기
-            </Button>
+            <Button className={styles.disable}>투표하기</Button>
+            <Button className={styles.disable}>수정하기</Button>
+            <Button className={styles.disable}>마감하기</Button>
             <Button
-              inputAttribute={inputAttribute}
               onClick={() => {
                 navigate(`/deletevote/${data.id}`);
               }}
