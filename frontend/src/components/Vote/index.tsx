@@ -25,7 +25,7 @@ function Vote({ data }: VoteProps) {
   const navigate = useNavigate();
   return (
     <div className={styles.wrap}>
-      <div className={styles.first}>
+      <div className={styles.wrapTitle}>
         <div className={styles.title}>{data.title}</div>
         <div className={styles.voteState}>
           {data.isOpen ? (
@@ -35,8 +35,8 @@ function Vote({ data }: VoteProps) {
           )}
         </div>
       </div>
-      <div className={styles.second}>대상 : {data.target}</div>
-      <div className={styles.third}>
+      <div className={styles.wrapTargetPeople}>대상 : {data.target}</div>
+      <div className={styles.wrapVoteInfo}>
         <div>
           <img width="13" height="15" src={Calender} alt="날짜" />
           <div>

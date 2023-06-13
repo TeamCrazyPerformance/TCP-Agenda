@@ -6,6 +6,7 @@ interface ButtonProps {
 
 function Button({
   children,
+  ...buttonAttribute
 }: ButtonProps &
   React.DetailedHTMLProps<
     React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -13,7 +14,9 @@ function Button({
   >) {
   return (
     <>
-      <button className={styles.button}>{children}</button>
+      <button className={styles.button} {...buttonAttribute}>
+        {children}
+      </button>
     </>
   );
 }
