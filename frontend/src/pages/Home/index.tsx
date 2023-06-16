@@ -1,4 +1,4 @@
-import Vote from 'components/Vote';
+
 import AdminVote from 'components/VoteAdmin';
 
 import styles from './index.scss';
@@ -15,6 +15,7 @@ function Home() {
   };
   return (
     <div className={styles.container}>
+      <AdminVote data={data}/>
     </div>
   );
 }
