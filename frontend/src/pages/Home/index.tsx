@@ -11,12 +11,10 @@ function Home() {
     closedAt: '2023-03-01T22:59:59',
     target: '재학생',
     votedMember: '10',
-    isOpen: true,
+    isOpen: false,
   };
   return (
     <div className={styles.container}>
-      <AdminVote data={data} />
-      {/* <Vote data={data} /> */}
     </div>
   );
 }
