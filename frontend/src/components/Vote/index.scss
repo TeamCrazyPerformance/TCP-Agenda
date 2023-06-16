@@ -1,0 +1,68 @@
+@import '~/styles/variables';
+.wrap {
+  font-size: 12px;
+  color: $BLACK_000;
+  text-align: center;
+  line-height: 2.5em;
+  border-radius: 4px;
+  background-color: $GRAY_009;
+  padding: 15px;
+  height: 12%;
+  margin-top: 60px;
+}
+.wrapTitle {
+  display: flex;
+  justify-content: space-between;
+}
+.wrapTargetPeople {
+  display: flex;
+}
+
+.wrapVoteInfo {
+  display: flex;
+  position: relative;
+  top: -15%;
+}
+.wrapVoteInfo div {
+  display: flex;
+  padding-right: 3px;
+  align-items: center;
+}
+.wrapVoteInfo div div {
+  padding-left: 2px;
+}
+.wrapVoteInfo div img {
+  padding-bottom: 2px;
+}
+.title {
+  font-size: 16px;
+}
+
+.voteState {
+  margin-right: 0;
+  margin-left: 6px;
+}
+.process {
+  color: $GREEN_003;
+}
+.end {
+  color: $BLACK_000;
+}
+.votebutton {
+  font-size: 12px;
+  width: 61px;
+  height: 25px;
+  margin-left: 5px;
+  margin-bottom: 7px;
+  border-radius: 3px;
+  background-color: $BLUE_000;
+}
+.voteresult {
+  font-size: 12px;
+  width: 61px;
+  height: 25px;
+  margin-left: 5px;
+  margin-bottom: 7px;
+  background-color: $GRAY_002;
+  border-radius: 3px;
+}
