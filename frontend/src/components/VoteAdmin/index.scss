@@ -1,105 +1,85 @@
 @import '~/styles/variables';
 .wrap {
+  position: relative;
   font-size: 12px;
-  color: rgb(64, 64, 64);
+  color: BLACK_000;
   text-align: center;
   line-height: 2.5em;
   border-radius: 4px;
   background-color: $GRAY_009;
   padding: 15px;
   width: 90%;
-  height: 22%;
+  height: 21%;
   margin-top: 60px;
 }
-.first {
+.wrapTitle {
   display: flex;
   justify-content: space-between;
 }
-.second {
+.wrapVoteInfo {
   display: flex;
-  position: relative;
   flex-direction: column;
 }
-.second div {
+.wrapVoteInfo div {
   display: flex;
-  align-items: center;
   padding-right: 5px;
   margin-left: 3px;
+  align-items: center;
 }
 .target {
   position: relative;
-  top: 10px;
+  top: 1em;
 }
 .calender {
   position: relative;
-  top: -10px;
+  bottom: 1em;
 }
-.third {
+.wrapButtons {
   display: flex;
   font-size: 13px;
   flex-direction: row-reverse;
   position: relative;
-  top: -13px;
+  top: -10%;
 }
-.third Button {
+.wrapButtons Button {
   width: 56px;
   height: 21px;
   font-size: 11px;
 }
-
 .title {
   font-size: 16px;
 }
-
 .voteState {
   margin-right: 0;
   margin-left: 6px;
 }
 .process {
-  color: rgb(26, 188, 156);
+  color: $GREEN_003;
 }
 .end {
   color: $GRAY_001;
 }
-
-.votebutton {
-  // padding-bottom: 2px;
-  // padding: 3px;
-  // margin-right: 8px;
-  // margin-left: 5px;
-  // margin-bottom: 10px;
+.voteButton {
   border-radius: 3px;
-  background-color: rgb(52, 152, 219);
+  background-color: $BLUE_000;
 }
-.editbutton {
-  // padding-bottom: 2px;
-  // padding: 6px;
-  // margin-right: 8px;
+.editButton {
   margin-left: 5px;
-  // margin-bottom: 10px;
   border-radius: 3px;
-  background-color: rgb(46, 204, 113);
+  background-color: $GREEN_004;
 }
-.closebutton {
-  // padding-bottom: 2px;
-  // padding: 6px;
-  // margin-right: 8px;
+.closeButton {
   margin-left: 5px;
-  // margin-bottom: 10px;
   border-radius: 3px;
-  background-color: rgb(241, 196, 15);
+  background-color: $YELLOW_001;
 }
-.deletebutton {
-  // padding-bottom: 2px;
-  // padding: 6px;
-  // margin-right: 8px;
+.deleteButton {
   margin-left: 5px;
-  // margin-bottom: 10px;
   border-radius: 3px;
-  background-color: rgb(231, 76, 60);
+  background-color: $RED_002;
 }
 .disable {
   margin-left: 5px;
   border-radius: 3px;
-  background-color: $GRAY_005;
+  background-color: $GRAY_002;
 }

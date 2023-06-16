@@ -25,7 +25,7 @@ function AdminVote({ data }: VoteProps) {
   const navigate = useNavigate();
   return (
     <div className={styles.wrap}>
-      <div className={styles.first}>
+      <div className={styles.wrapTitle}>
         <div className={styles.title}>{data.title}</div>
         <div className={styles.voteState}>
           {data.isOpen ? (
@@ -36,27 +36,27 @@ function AdminVote({ data }: VoteProps) {
         </div>
       </div>
 
-      <div className={styles.second}>
+      <div className={styles.wrapVoteInfo}>
         <div className={styles.target}>대상 : {data.target}</div>
         <div>
           <img width="13" height="15" src={Person} alt="인원" />
           <div>투표 인원 : {data.votedMember} 명</div>
         </div>
         <div className={styles.calender}>
-          <img width="13" height="15" src={Calender} alt="날짜" />
+          <img width="13" height="15" src={Calender} alt="투표날짜" />
           <div>
             {createdAt} ~{closedAt}
           </div>
         </div>
       </div>
-      <div className={styles.third}>
+      <div className={styles.wrapButtons}>
         {data.isOpen ? (
           <div>
             <Button
               onClick={() => {
                 navigate(`/vote/${data.id}`);
               }}
-              className={styles.votebutton}
+              className={styles.voteButton}
             >
               투표하기
             </Button>
@@ -64,7 +64,7 @@ function AdminVote({ data }: VoteProps) {
               onClick={() => {
                 navigate(`/editvote/${data.id}`);
               }}
-              className={styles.editbutton}
+              className={styles.editButton}
             >
               수정하기
             </Button>
@@ -72,7 +72,7 @@ function AdminVote({ data }: VoteProps) {
               onClick={() => {
                 navigate(`/closevote/${data.id}`);
               }}
-              className={styles.closebutton}
+              className={styles.closeButton}
             >
               마감하기
             </Button>
@@ -80,7 +80,7 @@ function AdminVote({ data }: VoteProps) {
               onClick={() => {
                 navigate(`/deletevote/${data.id}`);
               }}
-              className={styles.deletebutton}
+              className={styles.deleteButton}
             >
               삭제하기
             </Button>
@@ -94,7 +94,7 @@ function AdminVote({ data }: VoteProps) {
               onClick={() => {
                 navigate(`/deletevote/${data.id}`);
               }}
-              className={styles.deletebutton}
+              className={styles.deleteButton}
             >
               삭제하기
             </Button>
