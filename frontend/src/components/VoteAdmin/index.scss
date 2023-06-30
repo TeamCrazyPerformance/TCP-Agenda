@@ -2,15 +2,15 @@
 .wrap {
   position: relative;
   font-size: 12px;
-  color: BLACK_000;
+  color: $BLACK_000;
   text-align: center;
-  line-height: 2.5em;
-  border-radius: 4px;
-  background-color: $GRAY_009;
-  padding: 15px;
   width: 90%;
   height: 21%;
+  padding: 15px;
   margin-top: 60px;
+  background-color: $GRAY_009;
+  line-height: 2.5em;
+  border-radius: 4px;
 }
 .wrapTitle {
   display: flex;
@@ -19,12 +19,13 @@
 .wrapVoteInfo {
   display: flex;
   flex-direction: column;
-}
-.wrapVoteInfo div {
-  display: flex;
-  padding-right: 5px;
-  margin-left: 3px;
-  align-items: center;
+
+  div {
+    display: flex;
+    padding-right: 5px;
+    margin-left: 3px;
+    align-items: center;
+  }
 }
 .target {
   position: relative;
@@ -40,18 +41,18 @@
   flex-direction: row-reverse;
   position: relative;
   top: -10%;
-}
-.wrapButtons Button {
-  width: 56px;
-  height: 21px;
-  font-size: 11px;
+
+  Button {
+    width: 56px;
+    height: 21px;
+    font-size: 11px;
+  }
 }
 .title {
   font-size: 16px;
 }
 .voteState {
-  margin-right: 0;
-  margin-left: 6px;
+  margin: 0 0 0 6px;
 }
 .process {
   color: $GREEN_003;
@@ -78,8 +79,9 @@
   border-radius: 3px;
   background-color: $RED_002;
 }
-.disable {
+button:disabled {
   margin-left: 5px;
   border-radius: 3px;
+  line-height: 0;
   background-color: $GRAY_002;
 }
