@@ -9,15 +9,17 @@
   color: $BLACK_000;
   font-size: 12px;
   text-align: center;
-  line-height: 2.5em;
+  line-height: 1.55em;
 }
 .wrapTitle {
   display: flex;
   justify-content: space-between;
+  line-height: 2.5em;
 }
 .wrapVoteInfo {
   display: flex;
   flex-direction: column;
+  padding-top: 4%;
 
   div {
     display: flex;
@@ -26,19 +28,11 @@
     align-items: center;
   }
 }
-.target {
-  position: relative;
-  top: 1em;
-}
-.calender {
-  position: relative;
-  bottom: 1em;
-}
+
 .wrapButtons {
   display: flex;
   flex-direction: row-reverse;
-  position: relative;
-  top: -10%;
+  padding-top: 3%;
   font-size: 13px;
 
   Button {
