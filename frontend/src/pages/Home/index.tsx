@@ -15,7 +15,7 @@ function Home() {
   };
   return (
     <div className={styles.container}>
-      <Vote data={data} />
+      <AdminVote data={data} />
     </div>
   );
 }
