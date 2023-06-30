@@ -4,9 +4,9 @@ import Button from 'components/Button';
 
 import Calender from 'assets/svg/calender.svg';
 import Person from 'assets/svg/person.svg';
+import ConvertDate from 'utils/convertDate';
 
 import styles from './index.scss';
-import ConvertDate from '../../utils/convertDate';
 
 interface VoteProps {
   data: {

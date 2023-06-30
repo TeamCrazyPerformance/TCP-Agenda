@@ -1,14 +1,14 @@
 @import '~/styles/variables';
 .wrap {
-  font-size: 12px;
-  color: $BLACK_000;
-  text-align: center;
+  height: 12%;
   line-height: 2.5em;
+  padding: 15px;
+  margin-top: 60px;
   border-radius: 4px;
   background-color: $GRAY_009;
-  padding: 15px;
-  height: 12%;
-  margin-top: 60px;
+  color: $BLACK_000;
+  font-size: 12px;
+  text-align: center;
 }
 .wrapTitle {
   display: flex;
@@ -17,30 +17,29 @@
 .wrapTargetPeople {
   display: flex;
 }
-
 .wrapVoteInfo {
   display: flex;
   position: relative;
   top: -15%;
-}
-.wrapVoteInfo div {
-  display: flex;
-  padding-right: 3px;
-  align-items: center;
-}
-.wrapVoteInfo div div {
-  padding-left: 2px;
-}
-.wrapVoteInfo div img {
-  padding-bottom: 2px;
+
+  div {
+    display: flex;
+    padding: 0 3px 2px 0;
+    align-items: center;
+
+    div {
+      padding-left: 2px;
+    }
+    img {
+      padding-bottom: 2px;
+    }
+  }
 }
 .title {
   font-size: 16px;
 }
-
 .voteState {
-  margin-right: 0;
-  margin-left: 6px;
+  margin: 0 0 0 6px;
 }
 .process {
   color: $GREEN_003;
@@ -49,20 +48,18 @@
   color: $BLACK_000;
 }
 .votebutton {
-  font-size: 12px;
   width: 61px;
   height: 25px;
-  margin-left: 5px;
-  margin-bottom: 7px;
+  margin: 0 0 7px 5px;
   border-radius: 3px;
   background-color: $BLUE_000;
+  font-size: 12px;
 }
 .voteresult {
-  font-size: 12px;
   width: 61px;
   height: 25px;
-  margin-left: 5px;
-  margin-bottom: 7px;
+  margin: 0 0 7px 5px;
   background-color: $GRAY_002;
   border-radius: 3px;
+  font-size: 12px;
 }
