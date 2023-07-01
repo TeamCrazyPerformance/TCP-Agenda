@@ -4,9 +4,9 @@ import Button from 'components/Button';
 
 import Calender from 'assets/svg/calender.svg';
 import Person from 'assets/svg/person.svg';
+import ConvertDate from 'utils/convertDate';
 
 import styles from './index.scss';
-import ConvertDate from '../../utils/convertDate';
 
 interface VoteProps {
   data: {
@@ -87,9 +87,9 @@ function AdminVote({ data }: VoteProps) {
           </div>
         ) : (
           <div>
-            <Button className={styles.disable}>투표하기</Button>
-            <Button className={styles.disable}>수정하기</Button>
-            <Button className={styles.disable}>마감하기</Button>
+            <Button disabled>투표하기</Button>
+            <Button disabled>수정하기</Button>
+            <Button disabled>마감하기</Button>
             <Button
               onClick={() => {
                 navigate(`/deletevote/${data.id}`);
