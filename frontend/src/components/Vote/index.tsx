@@ -52,7 +52,7 @@ function Vote({ data }: VoteProps) {
             onClick={() => {
               navigate('/vote');
             }}
-            className={styles.votebutton}
+            className={styles.voteButton}
           >
             투표하기
           </Button>
@@ -61,7 +61,7 @@ function Vote({ data }: VoteProps) {
             onClick={() => {
               navigate(`/voteresult/${data.id}`);
             }}
-            className={styles.voteresult}
+            className={styles.voteResult}
           >
             결과보기
           </Button>
