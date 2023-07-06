@@ -1,0 +1,83 @@
+@import '~/styles/variables';
+.wrap {
+  width: 90%;
+  height: 21%;
+  padding: 15px;
+  margin-top: 20%;
+  background-color: $GRAY_009;
+  border-radius: 4px;
+  color: $BLACK_000;
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.55em;
+}
+.wrapTitle {
+  display: flex;
+  justify-content: space-between;
+  line-height: 2.5em;
+}
+.wrapVoteInfo {
+  display: flex;
+  flex-direction: column;
+  padding-top: 4%;
+
+  div {
+    display: flex;
+    padding-right: 5px;
+    margin-left: 3px;
+    align-items: center;
+  }
+  img {
+    padding-bottom: 0.2rem;
+  }
+}
+
+.wrapButtons {
+  display: flex;
+  flex-direction: row-reverse;
+  padding-top: 3%;
+  font-size: 13px;
+
+  Button {
+    width: 3.5rem;
+    height: 1.3rem;
+    font-size: 11px;
+  }
+}
+.title {
+  font-size: 16px;
+}
+.voteState {
+  margin: 0 0 0 6px;
+}
+.process {
+  color: $GREEN_003;
+}
+.end {
+  color: $GRAY_001;
+}
+.voteButton {
+  border-radius: 3px;
+  background-color: $BLUE_000;
+}
+.editButton {
+  margin-left: 5px;
+  background-color: $GREEN_004;
+  border-radius: 3px;
+}
+.closeButton {
+  margin-left: 5px;
+  background-color: $YELLOW_001;
+  border-radius: 3px;
+}
+.deleteButton {
+  margin-left: 5px;
+  background-color: $RED_002;
+  border-radius: 3px;
+}
+button:disabled {
+  margin-left: 5px;
+  border-radius: 3px;
+  background-color: $GRAY_002;
+  line-height: 0;
+}
